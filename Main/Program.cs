@@ -4,6 +4,7 @@ using Main.Services;
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 builder.Services.AddApi();
 builder.Services.AddDatabases(builder.Configuration);
+builder.Services.AddJwtAuthentication(builder.Configuration);
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -17,6 +18,7 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+    DevelopmentSetup.Setup(app.Configuration);
     app.UseSwagger();
     app.UseSwaggerUI();
 }
