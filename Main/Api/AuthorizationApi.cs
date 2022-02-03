@@ -1,4 +1,6 @@
-﻿using Core;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using Core;
 using Core.Features.GitHubApp;
 using Core.Features.GitHubApp.ApiModels;
 using Core.Features.Users.Models;
@@ -8,6 +10,8 @@ using Main.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Main.Api;
 
@@ -15,14 +19,16 @@ namespace Main.Api;
 public class AuthorizationApi : ControllerBase
 {
     private readonly AppDbContext _dbContext;
+    private readonly IConfiguration _conf;
     private readonly IGitHubService _github;
-    private readonly SignInManager<AppUser> _signInManager;
+    private readonly UserManager<AppUser> _userManager;
 
-    public AuthorizationApi(AppDbContext dbContext, IGitHubService githubService, SignInManager<AppUser> signInManager)
+    public AuthorizationApi(AppDbContext dbContext, IConfiguration conf,  IGitHubService githubService, UserManager<AppUser> userManager)
     {
+        _conf = conf;
         _dbContext = dbContext;
         _github = githubService;
-        _signInManager = signInManager;
+        _userManager = userManager;
     }
     
     [HttpPost("auth")]
@@ -32,7 +38,7 @@ public class AuthorizationApi : ControllerBase
     }
 
     [HttpPost("exchange-token")]
-    public async Task<GitHubTokens> ExchangeToken(AuthorizationTokenRequest requestData)
+    public async Task<AuthorizationTokenResponse> ExchangeToken(AuthorizationTokenRequest requestData)
     {
         GitHubTokens tokens = await _github.Authorization.ExchangeTokenAsync(
             code: requestData.Code,
@@ -48,11 +54,67 @@ public class AuthorizationApi : ControllerBase
 
         if (user == null)
         {
-            // TODO: create user if not exist
+            user = await CreateUserAsync(gitHubUser);
+        }
+
+        var response = new AuthorizationTokenResponse
+        {
+            Token = GenerateJwtToken(user, tokens)
+        };
+
+        return response;
+    }
+
+    // TODO: Move below to own class
+    
+    private async Task<AppUser> CreateUserAsync(GitHubUser gitHubUser)
+    {
+        await using IDbContextTransaction transaction = await _dbContext.Database.BeginTransactionAsync();
+
+        var user = new AppUser
+        {
+            UserName = Guid.NewGuid().ToString()
+        };
+
+        IdentityResult result = await _userManager.CreateAsync(user);
+        if (result.Succeeded)
+        {
+            var profile = new Profile
+            {
+                AppUserId = user.Id,
+                GitHubId = gitHubUser.Id
+            };
+            user.Profile = profile;
+            _dbContext.Profiles.Add(profile);
+
+            await _dbContext.SaveChangesAsync();
+            transaction.Commit();
+
+            return user;
         }
         
+        throw new ArgumentException("User already exists", nameof(gitHubUser));
+    }
 
-        // TODO: return identity token
-        return tokens;
+    private string GenerateJwtToken(AppUser user, GitHubTokens tokens)
+    {
+        var claims = new List<Claim>
+        {
+            new Claim("id", user.Id.ToString()),
+            new Claim("gh-access-token", tokens.AccessToken),
+            new Claim("gh-refresh-token", tokens.RefreshToken)
+        };
+        
+        DateTime expiresAt = DateTime.UtcNow.AddHours(8);
+        var signingCredentials = new SigningCredentials(_conf.GetJwtPrivateKey(), SecurityAlgorithms.RsaSha256);
+        var token = new JwtSecurityToken(
+            issuer: _conf.GetJwtIssuer(),
+            audience: _conf.GetJwtAudience(),
+            claims,
+            expires: expiresAt,
+            signingCredentials: signingCredentials
+        );
+        
+        return new JwtSecurityTokenHandler().WriteToken(token);
     }
 }
