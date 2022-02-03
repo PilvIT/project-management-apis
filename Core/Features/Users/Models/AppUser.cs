@@ -12,5 +12,6 @@ namespace Core.Features.Users.Models
     /// </summary>
     public class AppUser : IdentityUser<Guid>
     {
+        public Profile? Profile { get; set; }
     }
 }

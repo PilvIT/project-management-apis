@@ -1,4 +1,4 @@
-﻿namespace Core.Features.GitHubApp.JsonModels;
+﻿namespace Core.Features.GitHubApp.ApiModels;
 
 public class GitHubAuthorizationUrl
 {

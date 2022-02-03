@@ -1,6 +1,6 @@
 ﻿using System.Net.Http.Json;
 using Core.Exceptions;
-using Core.Features.GitHubApp.JsonModels;
+using Core.Features.GitHubApp.ApiModels;
 using Microsoft.AspNetCore.WebUtilities;
 
 namespace Core.Features.GitHubApp;
@@ -25,7 +25,7 @@ public class GitHubAuthorization
         _httpClient.BaseAddress = new Uri(Host);
     }
     
-    public GitHubAuthorizationUrl GetAuthorizationUrl(string redirectUri)
+    public GitHubAuthorizationUrl GetUrl(string redirectUri)
     {
         var state = Guid.NewGuid().ToString();
         var parameters = new Dictionary<string, string>
@@ -40,7 +40,7 @@ public class GitHubAuthorization
         return new GitHubAuthorizationUrl(url: url, state: state);
     }
 
-    public async Task<GitHubTokenExchangeResponse> ExchangeTokenAsync(string code, string redirectUri, string state)
+    public async Task<GitHubTokens> ExchangeTokenAsync(string code, string redirectUri, string state)
     {
         var requestData = new Dictionary<string, string>
         {
@@ -54,8 +54,7 @@ public class GitHubAuthorization
 
         if (response.IsSuccessStatusCode)
         {
-            GitHubTokenExchangeResponse? responseData =  await response.Content.ReadFromJsonAsync<GitHubTokenExchangeResponse>();
-            return responseData!;
+            return (await response.Content.ReadFromJsonAsync<GitHubTokens>())!;
         }
 
         // TODO: Log the error

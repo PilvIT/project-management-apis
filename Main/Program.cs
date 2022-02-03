@@ -1,14 +1,16 @@
 using Main;
+using Main.Services;
 
-var builder = WebApplication.CreateBuilder(args);
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+builder.Services.AddApi();
 builder.Services.AddDatabases(builder.Configuration);
 
-// Add services to the container.
-
-builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// Dependency injections
+builder.Services.AddTransient<IGitHubService, GitHubService>();
 
 var app = builder.Build();
 

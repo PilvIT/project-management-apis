@@ -11,11 +11,15 @@ namespace Core
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
         }
+     
+        public DbSet<Profile> Profiles { get; set; }
         
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
             builder.HasPostgresExtension("pgcrypto");
+            
+            builder.ApplyConfiguration(new ProfileConfiguration());
         } 
     }
 }
