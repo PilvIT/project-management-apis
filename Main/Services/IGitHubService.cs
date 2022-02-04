@@ -6,8 +6,5 @@ public interface IGitHubService
 {
     public GitHubAuthorization Authorization { get; }
 
-    public GitHubUserApiClient GetUserApiClient(string accessToken)
-    {
-        return new GitHubUserApiClient(accessToken);
-    } 
+    public GitHubUserApiClient GetUserApiClient(string accessToken);
 }

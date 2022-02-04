@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Net.Http.Headers;
 
 namespace Main;
 
@@ -22,6 +23,26 @@ public static class ServiceExtensions
         });
     }
 
+    public static void AddCorsPolicies(this IServiceCollection services)
+    {
+        services.AddCors(options =>
+        {
+            options.AddDefaultPolicy(policy =>
+            {
+                policy.WithHeaders(HeaderNames.Authorization, HeaderNames.ContentType);
+                policy.WithExposedHeaders(HeaderNames.ContentType);
+                policy.WithMethods("GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS");
+            });
+            options.AddPolicy("localhost", policy =>
+            {
+                policy.AllowAnyOrigin();
+                policy.WithHeaders(HeaderNames.Authorization, HeaderNames.ContentType);
+                policy.WithExposedHeaders(HeaderNames.ContentType);
+                policy.WithMethods("GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS");
+            });
+        });
+    }
+    
     public static void AddJwtAuthentication(this IServiceCollection services, IConfiguration conf)
     {
         services

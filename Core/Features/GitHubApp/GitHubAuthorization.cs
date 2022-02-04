@@ -1,7 +1,7 @@
 ﻿using System.Net.Http.Json;
-using Core.Exceptions;
 using Core.Features.GitHubApp.ApiModels;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Net.Http.Headers;
 
 namespace Core.Features.GitHubApp;
 
@@ -23,6 +23,7 @@ public class GitHubAuthorization
         _clientSecret = clientSecret;
         _httpClient = new HttpClient();
         _httpClient.BaseAddress = new Uri(Host);
+        _httpClient.DefaultRequestHeaders.Add(HeaderNames.Accept, "application/json");
     }
     
     public GitHubAuthorizationUrl GetUrl(string redirectUri)
@@ -50,14 +51,8 @@ public class GitHubAuthorization
             { "redirect_uri", redirectUri },
             { "state", state }
         };
+
         HttpResponseMessage response = await _httpClient.PostAsJsonAsync("/login/oauth/access_token", requestData);
-
-        if (response.IsSuccessStatusCode)
-        {
-            return (await response.Content.ReadFromJsonAsync<GitHubTokens>())!;
-        }
-
-        // TODO: Log the error
-        throw new ApiException("Authorization failed or GitHub is down.");
+        return (await response.Content.ReadFromJsonAsync<GitHubTokens>())!;
     }
 }

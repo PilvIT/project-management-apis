@@ -15,6 +15,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Main.Api;
 
+[ApiController]
 [Route("github")]
 public class AuthorizationApi : ControllerBase
 {
