@@ -1,9 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
-
-namespace Web.Middlewares
+﻿namespace Main.Middlewares
 {
     /// <summary>
     /// Logs requests and durations, not needed in Production.
@@ -21,17 +16,17 @@ namespace Web.Middlewares
 
         public async Task InvokeAsync(HttpContext httpContext)
         {
-            var startTime = DateTime.UtcNow;
+            DateTime startTime = DateTime.UtcNow;
             try
             {
                 await _next(httpContext);
             }
             finally
             {
-                var duration = (DateTime.UtcNow - startTime).TotalSeconds;
+                var duration = (DateTime.UtcNow - startTime).TotalMilliseconds;
 
                 _logger.LogInformation(
-                    "{method} {url}{query} {statusCode} {duration}s",
+                    "{method} {url}{query} {statusCode} {duration}ms",
                     httpContext.Request.Method,
                     httpContext.Request.Path.Value,
                     httpContext.Request.QueryString.Value,

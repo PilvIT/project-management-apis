@@ -3,6 +3,7 @@ using Core.Features.Projects.ApiModels;
 using Core.Features.Projects.Models;
 using Main.Injectables.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Main.Api;
@@ -45,5 +46,28 @@ public class ProjectApi : ApiBase
         transaction.Commit();
 
         return project;
+    }
+    
+    [HttpGet("{id:guid}")]
+    public ActionResult<ProjectDetailModel> GetProject(Guid id)
+    {
+        try
+        {
+            Project project = _dbContext.Projects
+                .Include(m => m.Group)
+                .Single(m => m.Id == id);
+
+            return new ProjectDetailModel
+            {
+                Id = project.Id,
+                Name = project.Name,
+                Group = project.Group!.Name
+            };
+        }
+        catch (InvalidOperationException)
+        {
+            // The project does not exist
+            return new NotFoundResult();
+        }
     }
 }

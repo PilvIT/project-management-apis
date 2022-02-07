@@ -1,8 +1,8 @@
 using Main;
 using Main.Injectables;
 using Main.Injectables.Interfaces;
+using Main.Middlewares;
 using Microsoft.AspNetCore.HttpLogging;
-using Web.Middlewares;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 builder.Services.AddApi();
