@@ -5,8 +5,9 @@ using Core.Features.GitHubApp;
 using Core.Features.GitHubApp.ApiModels;
 using Core.Features.Users.Models;
 using Main.ApiModels;
+using Main.Injectables.Interfaces;
 using Main.JsonModels;
-using Main.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -32,12 +33,14 @@ public class AuthorizationApi : ControllerBase
         _userManager = userManager;
     }
     
+    [AllowAnonymous]
     [HttpPost("auth")]
     public GitHubAuthorizationUrl GetAuthorizationUrl(AuthorizationRequest requestData)
     {
         return _github.Authorization.GetUrl(requestData.RedirectUri);
     }
 
+    [AllowAnonymous]
     [HttpPost("exchange-token")]
     public async Task<AuthorizationTokenResponse> ExchangeToken(AuthorizationTokenRequest requestData)
     {
@@ -101,7 +104,7 @@ public class AuthorizationApi : ControllerBase
     {
         var claims = new List<Claim>
         {
-            new Claim("id", user.Id.ToString()),
+            new Claim(ClaimTypes.Name, user.Id.ToString()),
             new Claim("gh-access-token", tokens.AccessToken),
             new Claim("gh-refresh-token", tokens.RefreshToken)
         };

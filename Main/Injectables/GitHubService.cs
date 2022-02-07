@@ -1,6 +1,7 @@
 ﻿using Core.Features.GitHubApp;
+using Main.Injectables.Interfaces;
 
-namespace Main.Services;
+namespace Main.Injectables;
 
 public class GitHubService : IGitHubService
 {

@@ -1,6 +1,8 @@
 using Main;
-using Main.Services;
+using Main.Injectables;
+using Main.Injectables.Interfaces;
 using Microsoft.AspNetCore.HttpLogging;
+using Web.Middlewares;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 builder.Services.AddApi();
@@ -19,8 +21,9 @@ builder.Services.AddHttpLogging(options =>
 
 // Dependency injections
 builder.Services.AddTransient<IGitHubService, GitHubService>();
+builder.Services.AddTransient<IAuth, Auth>();
 
-var app = builder.Build();
+WebApplication app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -29,13 +32,17 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
     app.UseCors("localhost");
-    app.UseHttpLogging();
+    app.UseMiddleware<RequestLogMiddleware>();
+}
+else
+{
+    // Production configuration
+    app.UseCors();
+    app.UseHttpsRedirection();
 }
 
-app.UseHttpsRedirection();
-
+app.UseAuthentication();
 app.UseAuthorization();
-
-app.MapControllers();
+app.MapControllers().RequireAuthorization();
 
 app.Run();

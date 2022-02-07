@@ -3,6 +3,7 @@ using System.Text.Json.Serialization;
 using Core;
 using Core.Features.Users.Models;
 using Main.Constants;
+using Main.Exceptions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -15,12 +16,17 @@ public static class ServiceExtensions
 {
     public static void AddApi(this IServiceCollection services)
     {
-        services.AddControllers().AddJsonOptions(options =>
-        {
-            options.JsonSerializerOptions.DictionaryKeyPolicy = JsonNamingPolicy.CamelCase;
-            options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
-            options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
-        });
+        services
+            .AddControllers(options =>
+            {
+                options.Filters.Add(new HttpResponseExceptionFilter());
+            })
+            .AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.DictionaryKeyPolicy = JsonNamingPolicy.CamelCase;
+                options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
+            });
     }
 
     public static void AddCorsPolicies(this IServiceCollection services)
@@ -42,7 +48,7 @@ public static class ServiceExtensions
             });
         });
     }
-    
+
     public static void AddJwtAuthentication(this IServiceCollection services, IConfiguration conf)
     {
         services

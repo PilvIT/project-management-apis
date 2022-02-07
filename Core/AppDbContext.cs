@@ -11,9 +11,9 @@ namespace Core
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
         }
-     
-        public DbSet<Profile> Profiles { get; set; }
-        
+
+        public DbSet<Profile> Profiles { get; set; } = null!;
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
