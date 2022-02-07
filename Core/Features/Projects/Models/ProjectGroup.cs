@@ -1,4 +1,4 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 
 namespace Core.Features.Projects.Models;
@@ -8,7 +8,8 @@ public class ProjectGroup : BaseModel
 {
     public string Name { get; set; } = null!;
     
-    public Collection<Project>? Projects { get; set; }
+    [JsonIgnore]
+    public List<Project>? Projects { get; set; }
 }
 
 public class ProjectGroupConfiguration : BaseModelConfiguration<ProjectGroup>
