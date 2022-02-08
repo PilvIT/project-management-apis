@@ -9,6 +9,8 @@ public class Project : BaseModel
     [ForeignKey(nameof(ProjectGroup))]
     public Guid GroupId { get; set; }
     public ProjectGroup? Group { get; set; }
+
+    public List<GitRepository> GitRepositories { get; set; } = new List<GitRepository>();
 }
 
 public class ProjectConfiguration : BaseModelConfiguration<Project>

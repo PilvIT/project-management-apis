@@ -11,18 +11,29 @@ public class GitRepositoryApi : ApiBase
 {
     private readonly AppDbContext _dbContext;
     
-    protected GitRepositoryApi(AppDbContext dbContext, IAuth auth) : base(auth)
+    public GitRepositoryApi(AppDbContext dbContext, IAuth auth) : base(auth)
     {
         _dbContext = dbContext;
     }
 
     [HttpPost]
-    public GitRepository CreateGitRepository(GitRepositoryCreateModel request)
+    public ActionResult<GitRepository> CreateGitRepository(GitRepositoryCreateModel request)
     {
+        Project? project = _dbContext.Projects.Find(request.ProjectId);
+        if (project == null)
+        {
+            return new NotFoundObjectResult(new Dictionary<string, string>
+            {
+                { "message", $"Project {request.ProjectId} not found!" }
+            });
+        }
+        
         var repository = new GitRepository
         {
-            Name = request.Name,
-            Url = request.Url
+            Name = request.Url.Split("/").Last(),
+            Url = request.Url,
+            Technologies = new List<Technology>(),
+            ProjectId = project.Id
         };
         _dbContext.GitRepositories.Add(repository);
         _dbContext.SaveChanges();

@@ -3,6 +3,7 @@ using System;
 using Core;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Main.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220208094923_ImproveProjectNavigationProperties")]
+    partial class ImproveProjectNavigationProperties
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -47,7 +49,7 @@ namespace Main.Migrations
 
                     b.HasIndex("ProjectId");
 
-                    b.ToTable("GitRepositories", (string)null);
+                    b.ToTable("GitRepositories");
                 });
 
             modelBuilder.Entity("Core.Features.Projects.Models.Project", b =>
@@ -68,7 +70,7 @@ namespace Main.Migrations
 
                     b.HasIndex("GroupId");
 
-                    b.ToTable("Projects", (string)null);
+                    b.ToTable("Projects");
                 });
 
             modelBuilder.Entity("Core.Features.Projects.Models.ProjectGroup", b =>
@@ -87,7 +89,7 @@ namespace Main.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("ProjectGroups", (string)null);
+                    b.ToTable("ProjectGroups");
                 });
 
             modelBuilder.Entity("Core.Features.Projects.Models.Technology", b =>
@@ -109,7 +111,7 @@ namespace Main.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Technologies", (string)null);
+                    b.ToTable("Technologies");
                 });
 
             modelBuilder.Entity("Core.Features.Users.Models.AppRole", b =>
@@ -225,7 +227,7 @@ namespace Main.Migrations
                     b.HasIndex("GitHubId")
                         .IsUnique();
 
-                    b.ToTable("Profiles", (string)null);
+                    b.ToTable("Profiles");
                 });
 
             modelBuilder.Entity("GitRepositoryTechnology", b =>
@@ -240,7 +242,7 @@ namespace Main.Migrations
 
                     b.HasIndex("TechnologiesId");
 
-                    b.ToTable("GitRepositoryTechnology", (string)null);
+                    b.ToTable("GitRepositoryTechnology");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>

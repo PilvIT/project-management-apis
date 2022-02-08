@@ -55,13 +55,18 @@ public class ProjectApi : ApiBase
         {
             Project project = _dbContext.Projects
                 .Include(m => m.Group)
+                .Include(m => m.GitRepositories)
+                .ThenInclude(m => m.Technologies)
                 .Single(m => m.Id == id);
 
+            project.GitRepositories.ToList();
+            
             return new ProjectDetailModel
             {
                 Id = project.Id,
                 Name = project.Name,
-                Group = project.Group!.Name
+                Group = project.Group!.Name,
+                Repositories = project.GitRepositories.ToList()
             };
         }
         catch (InvalidOperationException)
