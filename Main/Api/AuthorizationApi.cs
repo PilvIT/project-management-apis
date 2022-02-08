@@ -3,15 +3,14 @@ using System.Security.Claims;
 using Core;
 using Core.Features.GitHubApp;
 using Core.Features.GitHubApp.ApiModels;
+using Core.Features.Users;
 using Core.Features.Users.Models;
 using Main.ApiModels;
 using Main.Injectables.Interfaces;
-using Main.JsonModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Main.Api;
@@ -58,7 +57,8 @@ public class AuthorizationApi : ControllerBase
 
         if (user == null)
         {
-            user = await CreateUserAsync(gitHubUser);
+            var userCreateService = new UserCreateService(_dbContext, _userManager);
+            user = await userCreateService.CreateAsync(gitHubUser.Id);
         }
 
         var response = new AuthorizationTokenResponse
@@ -67,37 +67,6 @@ public class AuthorizationApi : ControllerBase
         };
 
         return response;
-    }
-
-    // TODO: Move below to own class
-    
-    private async Task<AppUser> CreateUserAsync(GitHubUser gitHubUser)
-    {
-        await using IDbContextTransaction transaction = await _dbContext.Database.BeginTransactionAsync();
-
-        var user = new AppUser
-        {
-            UserName = Guid.NewGuid().ToString()
-        };
-
-        IdentityResult result = await _userManager.CreateAsync(user);
-        if (result.Succeeded)
-        {
-            var profile = new Profile
-            {
-                AppUserId = user.Id,
-                GitHubId = gitHubUser.Id
-            };
-            user.Profile = profile;
-            _dbContext.Profiles.Add(profile);
-
-            await _dbContext.SaveChangesAsync();
-            transaction.Commit();
-
-            return user;
-        }
-        
-        throw new ArgumentException("User already exists", nameof(gitHubUser));
     }
 
     private string GenerateJwtToken(AppUser user, GitHubTokens tokens)
@@ -114,7 +83,7 @@ public class AuthorizationApi : ControllerBase
         var token = new JwtSecurityToken(
             issuer: _conf.GetJwtIssuer(),
             audience: _conf.GetJwtAudience(),
-            claims,
+            claims: claims,
             expires: expiresAt,
             signingCredentials: signingCredentials
         );

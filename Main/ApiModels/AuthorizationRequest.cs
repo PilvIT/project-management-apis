@@ -1,4 +1,4 @@
-﻿namespace Main.JsonModels;
+﻿namespace Main.ApiModels;
 
 public class AuthorizationRequest
 {

@@ -46,3 +46,8 @@ app.UseAuthorization();
 app.MapControllers().RequireAuthorization();
 
 app.Run();
+
+namespace Main
+{
+    public partial class Program { }
+}

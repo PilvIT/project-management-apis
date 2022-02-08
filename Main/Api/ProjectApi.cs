@@ -25,7 +25,7 @@ public class ProjectApi : ApiBase
     }
 
     [HttpPost]
-    public Project CreateProject(ProjectCreateModel request)
+    public ProjectDetailModel CreateProject(ProjectCreateModel request)
     {
         using IDbContextTransaction transaction = _dbContext.Database.BeginTransaction();
         ProjectGroup? group = request.Group;
@@ -45,7 +45,13 @@ public class ProjectApi : ApiBase
         _dbContext.SaveChanges();
         transaction.Commit();
 
-        return project;
+        return new ProjectDetailModel
+        {
+            Id = project.Id,
+            Name = project.Name,
+            Group = project.Group.Name,
+            Repositories = new List<GitRepository>()
+        };
     }
     
     [HttpGet("{id:guid}")]
