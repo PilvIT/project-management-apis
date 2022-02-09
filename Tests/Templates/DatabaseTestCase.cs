@@ -9,7 +9,7 @@ using Xunit;
 namespace Tests.Templates;
 
 [Collection("DatabaseConnected")]
-public class DatabaseTestCase
+public class DatabaseTestCase : BaseTest
 {
     private static object _idSequence = (long) 0;
     protected readonly AppDbContext DbContext;

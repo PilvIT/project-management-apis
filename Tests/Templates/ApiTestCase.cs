@@ -25,7 +25,7 @@ public class ApiTestCase : DatabaseTestCase
         _app = Setup.WebApplicationFactory.WithWebHostBuilder(builder => builder.ConfigureServices(injector.Invoke));
     }
     
-    protected HttpClient GetAnonClient => _app.CreateClient();
+    protected HttpClient GetAnonClient() => _app.CreateClient();
 
     protected async Task<(AppUser, HttpClient)> SetupUserAsync()
     {

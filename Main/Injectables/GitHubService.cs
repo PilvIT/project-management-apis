@@ -11,8 +11,8 @@ public class GitHubService : IGitHubService
     
     public GitHubService(IConfiguration conf)
     {
-        Authorization = new GitHubAuthorization(conf.GetGitHubClientId(), conf.GetGitHubClientSecret());
         _conf = conf;
+        Authorization = new GitHubAuthorization(conf.GetGitHubClientId(), conf.GetGitHubClientSecret());
     }
     
     public GitHubUserApiClient GetUserApiClient(string accessToken)

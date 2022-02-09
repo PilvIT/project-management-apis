@@ -1,6 +1,10 @@
-﻿namespace Main.ApiModels;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Main.ApiModels;
 
 public class AuthorizationRequest
 {
-    public string RedirectUri { set; get; } = "";
+    [Required]
+    [Url]
+    public string RedirectUri { set; get; } = null!;
 }

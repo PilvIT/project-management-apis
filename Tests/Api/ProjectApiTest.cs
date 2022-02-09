@@ -37,8 +37,8 @@ public class ProjectApiTest : ApiTestCase
         await DbContext.Entry(project).Reference(p => p.Group).LoadAsync();
         
         // Assert database
-        Assert.Equal("Example Oyj", project.Group!.Name);
-        Assert.Equal("Candy Shop", project.Name);
+        Assert.Equal(requestData.GroupName, project.Group!.Name);
+        Assert.Equal(requestData.Name, project.Name);
         
         // Assert response
         Assert.Equal(project.Id, responseData.Id);
