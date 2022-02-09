@@ -9,7 +9,7 @@ namespace Core.Features.GitHubApp;
 /// Implements a web application flow for GitHub Authorization.
 /// <see href="https://docs.github.com/en/developers/apps/building-github-apps/identifying-and-authorizing-users-for-github-apps#web-application-flow">Official Guide</see>
 /// </summary>
-public class GitHubAuthorization
+public class GitHubAuthorization : IGitHubAuthorization
 {
     private const string Host = "https://github.com";
     
@@ -25,7 +25,8 @@ public class GitHubAuthorization
         _httpClient.BaseAddress = new Uri(Host);
         _httpClient.DefaultRequestHeaders.Add(HeaderNames.Accept, "application/json");
     }
-    
+
+    /// <inheritdoc />
     public GitHubAuthorizationUrl GetUrl(string redirectUri)
     {
         var state = Guid.NewGuid().ToString();
@@ -41,6 +42,7 @@ public class GitHubAuthorization
         return new GitHubAuthorizationUrl(url: url, state: state);
     }
 
+    /// <inheritdoc />
     public async Task<GitHubTokens> ExchangeTokenAsync(string code, string redirectUri, string state)
     {
         var requestData = new Dictionary<string, string>

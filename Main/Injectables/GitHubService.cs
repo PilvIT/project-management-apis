@@ -7,7 +7,7 @@ public class GitHubService : IGitHubService
 {
     private readonly IConfiguration _conf;
     
-    public GitHubAuthorization Authorization { get; }
+    public IGitHubAuthorization Authorization { get; }
     
     public GitHubService(IConfiguration conf)
     {
@@ -15,7 +15,7 @@ public class GitHubService : IGitHubService
         Authorization = new GitHubAuthorization(conf.GetGitHubClientId(), conf.GetGitHubClientSecret());
     }
     
-    public GitHubUserApiClient GetUserApiClient(string accessToken)
+    public IGitHubUserApiClient GetUserApiClient(string accessToken)
     {
         return new GitHubUserApiClient(appName: _conf.GetGitHubAppName(), accessToken: accessToken);
     } 

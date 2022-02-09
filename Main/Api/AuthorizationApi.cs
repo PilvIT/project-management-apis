@@ -48,7 +48,7 @@ public class AuthorizationApi : ControllerBase
             redirectUri: requestData.RedirectUri,
             state: requestData.State);
 
-        GitHubUserApiClient userApi = _github.GetUserApiClient(accessToken: tokens.AccessToken);
+        IGitHubUserApiClient userApi = _github.GetUserApiClient(accessToken: tokens.AccessToken);
         GitHubUser gitHubUser = await userApi.GetUserAsync();
         
         AppUser? user = _dbContext.Users
@@ -63,6 +63,7 @@ public class AuthorizationApi : ControllerBase
 
         var response = new AuthorizationTokenResponse
         {
+            UserId = user.Id,
             Token = GenerateJwtToken(user, tokens)
         };
 

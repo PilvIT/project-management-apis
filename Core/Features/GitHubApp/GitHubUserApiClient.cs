@@ -5,7 +5,7 @@ using Microsoft.Net.Http.Headers;
 
 namespace Core.Features.GitHubApp;
 
-public class GitHubUserApiClient
+public class GitHubUserApiClient : IGitHubUserApiClient
 {
     private const string Host = "https://api.github.com";
     private readonly HttpClient _httpClient;
@@ -19,11 +19,10 @@ public class GitHubUserApiClient
         _httpClient.DefaultRequestHeaders.Add(HeaderNames.UserAgent, appName);
     }
 
+    /// <inheritdoc />
     public async Task<GitHubUser> GetUserAsync()
     {
         HttpResponseMessage response = await _httpClient.GetAsync("/user");
-        Console.WriteLine(response.ToString());
-        Console.WriteLine(response.Content.ReadAsStringAsync());
         return (await response.Content.ReadFromJsonAsync<GitHubUser>())!;
     }
 }

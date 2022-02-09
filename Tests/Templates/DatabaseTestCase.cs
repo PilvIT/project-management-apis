@@ -25,12 +25,19 @@ public class DatabaseTestCase : BaseTest
         var userManager = scope.ServiceProvider.GetService<UserManager<AppUser>>()!;
 
         var userCreateService = new UserCreateService(dbContext: DbContext, userManager: userManager);
-        long gitHubId = 0;
+        long gitHubId = GetSequentialId();
+        return await userCreateService.CreateAsync(gitHubId);
+    }
+
+    protected static long GetSequentialId()
+    {
+        long id = 0;
         lock (_idSequence)
         {
-            gitHubId = (long) _idSequence;
-            _idSequence = gitHubId + 1;
+            id = (long) _idSequence;
+            _idSequence = id + 1;
         }
-        return await userCreateService.CreateAsync(gitHubId);
+
+        return id;
     }
 }

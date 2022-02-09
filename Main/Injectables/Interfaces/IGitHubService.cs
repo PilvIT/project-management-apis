@@ -4,7 +4,7 @@ namespace Main.Injectables.Interfaces;
 
 public interface IGitHubService
 {
-    public GitHubAuthorization Authorization { get; }
+    public IGitHubAuthorization Authorization { get; }
 
-    public GitHubUserApiClient GetUserApiClient(string accessToken);
+    public IGitHubUserApiClient GetUserApiClient(string accessToken);
 }

@@ -38,9 +38,7 @@ public class BaseTest
         {
             Task<string> content = responseMessage.Content.ReadAsStringAsync();
             content.Wait();
-            using JsonDocument json = JsonDocument.Parse(content.Result);
-            string message = JsonSerializer.Serialize(json, new JsonSerializerOptions { WriteIndented = true });
-            throw new AssertionException(message, exception);
+            throw new AssertionException(content.Result, exception);
         }
     }
 }
