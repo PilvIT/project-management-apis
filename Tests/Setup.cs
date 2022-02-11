@@ -10,7 +10,7 @@ namespace Tests;
 public static class Setup
 {
     public static readonly IConfiguration Configuration = ReadConfigurationFiles();
-    private static readonly DbContextOptions<AppDbContext> DbContextOptions = InitDatabase();
+    public static readonly DbContextOptions<AppDbContext> DbContextOptions = InitDatabase();
     public static readonly WebApplicationFactory<Program> WebApplicationFactory = InitWebApplicationFactory();
 
     public static AppDbContext GetDbContext() => new AppDbContext(DbContextOptions);

@@ -1,6 +1,7 @@
 ﻿using Core;
 using Core.Features.Projects.ApiModels;
 using Core.Features.Projects.Models;
+using Core.Features.Projects.ViewModels;
 using Main.Injectables.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -12,16 +13,22 @@ namespace Main.Api;
 public class ProjectApi : ApiBase
 {
     private readonly AppDbContext _dbContext;
-    
+
     public ProjectApi(AppDbContext dbContext, IAuth auth) : base(auth)
     {
         _dbContext = dbContext;
     }
-    
+
     [HttpGet]
-    public List<Project> GetProjects()
+    public List<ProjectListDetail> GetProjects()
     {
-        return _dbContext.Projects.ToList();
+        return _dbContext.Projects
+            .Include(p => p.Group)
+            .Select(p => new ProjectListDetail
+            {
+                Id = p.Id,
+                DisplayName = $"{p.Group!.Name} / {p.Name}"
+            }).ToList();
     }
 
     [HttpPost]
@@ -53,7 +60,7 @@ public class ProjectApi : ApiBase
             Repositories = new List<GitRepository>()
         };
     }
-    
+
     [HttpGet("{id:guid}")]
     public ActionResult<ProjectDetailModel> GetProject(Guid id)
     {
@@ -66,7 +73,7 @@ public class ProjectApi : ApiBase
                 .Single(m => m.Id == id);
 
             project.GitRepositories.ToList();
-            
+
             return new ProjectDetailModel
             {
                 Id = project.Id,
