@@ -16,4 +16,6 @@ public class GitHubArtifactListDetail
     
     [JsonPropertyName("archive_download_url")]
     public string DownloadUrl { get; set; } = null!;
+    
+    public bool Expired { get; set; }
 }

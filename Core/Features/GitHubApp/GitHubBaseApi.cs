@@ -1,0 +1,32 @@
+﻿using System.Net.Http.Headers;
+using Core.Features.GitHubApp.ApiModels;
+using Microsoft.Net.Http.Headers;
+
+namespace Core.Features.GitHubApp;
+
+/// <summary>
+/// Handle http client creation.
+/// </summary>
+public class GitHubBaseApi
+{
+    protected const string Host = "https://api.github.com";
+
+    private readonly string _userAgent;
+    private readonly GitHubTokens _tokens;
+
+    protected GitHubBaseApi(string userAgent, GitHubTokens tokens)
+    {
+        _tokens = tokens;
+        _userAgent = userAgent;
+    }
+
+    protected HttpClient CreateHttpClient()
+    {
+        var client = new HttpClient();
+        client.BaseAddress = new Uri(Host);
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("token", _tokens.AccessToken);
+        client.DefaultRequestHeaders.Add(HeaderNames.Accept, "application/vnd.github.v3+json");
+        client.DefaultRequestHeaders.Add(HeaderNames.UserAgent, _userAgent);
+        return client;
+    }
+}

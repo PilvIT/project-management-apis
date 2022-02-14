@@ -1,6 +1,7 @@
 ﻿using Core;
 using Core.Features.GitHubApp;
 using Core.Features.GitHubApp.ApiModels;
+using Core.Features.Projects;
 using Core.Features.Projects.ApiModels;
 using Core.Features.Projects.Models;
 using Main.Injectables.Interfaces;
@@ -28,14 +29,21 @@ public class GitRepositoryApi : ApiBase
     [HttpGet("{id:guid}/refresh")]
     public async Task<ActionResult> RefreshRepositoryInfo(Guid id)
     {
-        GitRepository? repository = _dbContext.GitRepositories.Find(id);
+        GitRepository? repository = await _dbContext.GitRepositories.FindAsync(id);
         if (repository == null)
         {
             return new NotFoundResult();
         }
 
         var client = new GitHubRepositoryApiClient(_conf.GetGitHubAppName(), GitHubTokens);
-        return new ObjectResult(await client.GetLatestArtifacts(repository.Url, _artifactDirectory));
+        var artifactPath = await client.GetLatestArtifacts(repository.Url, _artifactDirectory);
+        if (artifactPath != null)
+        {
+            var artifactLoader = new ArtifactLoader(artifactPath, _dbContext);
+            await artifactLoader.LoadToDbAsync(repository);
+        }
+
+        return new OkObjectResult(new {});
     }
     
     [HttpPost]

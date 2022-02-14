@@ -1,34 +1,31 @@
 ﻿using System.IO.Compression;
-using System.Net.Http.Headers;
 using Core.Extensions;
 using Core.Features.GitHubApp.ApiModels;
-using Microsoft.Net.Http.Headers;
 
 namespace Core.Features.GitHubApp;
 
-public class GitHubRepositoryApiClient
+public class GitHubRepositoryApiClient : GitHubBaseApi
 {
-    private const string Host = "https://api.github.com";
-    private readonly HttpClient _httpClient;
-    
-    public GitHubRepositoryApiClient(string appName, GitHubTokens tokens)
+    public GitHubRepositoryApiClient(string appName, GitHubTokens tokens) : base(appName, tokens)
     {
-        _httpClient = new HttpClient();
-        _httpClient.BaseAddress = new Uri(Host);
-        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("token", tokens.AccessToken);
-        _httpClient.DefaultRequestHeaders.Add(HeaderNames.Accept, "application/vnd.github.v3+json");
-        _httpClient.DefaultRequestHeaders.Add(HeaderNames.UserAgent, appName);
     }
     
-    public async Task<object> GetLatestArtifacts(string repositoryUrl, string targetDirectory)
+    /// <summary>
+    /// Finds the latest artifact and downloads it.
+    /// </summary>
+    /// <param name="repositoryUrl">to find artifacts</param>
+    /// <param name="targetDirectory">directory </param>
+    /// <returns>path to unzipped artifact or null if no artifact exists</returns>
+    public async Task<string?> GetLatestArtifacts(string repositoryUrl, string targetDirectory)
     {
         var url = $"{repositoryUrl}/actions/artifacts".Replace("https://github.com/", $"{Host}/repos/");
-        HttpResponseMessage response = await _httpClient.GetAsync(url);
-        var artifactData =  await response.ReadJsonAsync<GitHubArtifactListResponse>();
-        if (artifactData.Count > 0)
+        HttpResponseMessage response = await CreateHttpClient().GetAsync(url);
+        var data =  await response.ReadJsonAsync<GitHubArtifactListResponse>();
+        if (data.Count > 0 && !data.Artifacts[0].Expired)
         {
-            string path = await DownloadArtifactAsync(artifactData.Artifacts[0], targetDirectory);
+             return await DownloadArtifactAsync(data.Artifacts[0], targetDirectory);
         }
+
         return null;
     }
     
@@ -36,8 +33,14 @@ public class GitHubRepositoryApiClient
     {
         var zipPath = $"{targetDirectory}/${artifact.NodeId}.zip";
         var unzipPath = $"{targetDirectory}/${artifact.NodeId}";
+
+        // Prevent unnecessary downloads.
+        if (Directory.Exists(unzipPath))
+        {
+            return unzipPath;
+        }
         
-        HttpResponseMessage response = await _httpClient.GetAsync(artifact.DownloadUrl);
+        HttpResponseMessage response = await CreateHttpClient().GetAsync(artifact.DownloadUrl);
         Stream stream = await response.Content.ReadAsStreamAsync();
 
         await using var fs = new FileStream(zipPath, FileMode.Create, FileAccess.Write, FileShare.None);

@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "Core\Core.csproj", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{EF5D27AA-574D-4EC5-84AA-012832E0B781}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabaseSeeder", "DatabaseSeeder\DatabaseSeeder.csproj", "{F1AC625E-005E-44D0-86A5-9310160D1E2F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{EF5D27AA-574D-4EC5-84AA-012832E0B781}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EF5D27AA-574D-4EC5-84AA-012832E0B781}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EF5D27AA-574D-4EC5-84AA-012832E0B781}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F1AC625E-005E-44D0-86A5-9310160D1E2F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F1AC625E-005E-44D0-86A5-9310160D1E2F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F1AC625E-005E-44D0-86A5-9310160D1E2F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F1AC625E-005E-44D0-86A5-9310160D1E2F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
