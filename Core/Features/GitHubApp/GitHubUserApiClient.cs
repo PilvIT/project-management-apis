@@ -1,5 +1,6 @@
 ﻿using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using Core.Extensions;
 using Core.Features.GitHubApp.ApiModels;
 using Microsoft.Net.Http.Headers;
 
@@ -15,7 +16,7 @@ public class GitHubUserApiClient : IGitHubUserApiClient
         _httpClient = new HttpClient();
         _httpClient.BaseAddress = new Uri(Host);
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("token", accessToken);
-        _httpClient.DefaultRequestHeaders.Add(HeaderNames.Accept, "application/json");
+        _httpClient.DefaultRequestHeaders.Add(HeaderNames.Accept, "application/vnd.github.v3+json");
         _httpClient.DefaultRequestHeaders.Add(HeaderNames.UserAgent, appName);
     }
 
@@ -25,4 +26,6 @@ public class GitHubUserApiClient : IGitHubUserApiClient
         HttpResponseMessage response = await _httpClient.GetAsync("/user");
         return (await response.Content.ReadFromJsonAsync<GitHubUser>())!;
     }
+    
+    // TODO: Token refresh
 }
