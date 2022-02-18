@@ -22,6 +22,26 @@ public class ArtifactLoader
     {
         await LoadNpmPackageJsonAsync(repository);
         await _dbContext.SaveChangesAsync();
+        await InferTechnologies(repository);
+        await _dbContext.SaveChangesAsync();
+    }
+
+    private async Task InferTechnologies(GitRepository repository)
+    {
+        await _dbContext.Entry(repository).Collection(r => r.Dependencies).LoadAsync();
+        await _dbContext.Entry(repository).Collection(r => r.Technologies).LoadAsync();
+
+        foreach (Dependency dependency in repository.Dependencies)
+        {
+            foreach (var (name, version) in dependency.Content)
+            {
+                Technology? t = _dbContext.Technologies.SingleOrDefault(t => t.Name == name);
+                if (t != null && !repository.Technologies.Exists(tx => tx.Name == t.Name))
+                {
+                    repository.Technologies.Add(t);
+                }
+            }
+        }
     }
 
     private async Task LoadNpmPackageJsonAsync(GitRepository repository)
@@ -41,15 +61,17 @@ public class ArtifactLoader
             .SingleOrDefault(d => d.Path == filePath);
         if (dependency == null)
         {
-            dependency = new Dependency
+            _dbContext.Dependencies.Add(new Dependency
             {
                 Path = filePath,
                 Content = packageJson.Dependencies,
                 GitRepositoryId = repository.Id
-            };
+            });
         }
-        dependency.Content = packageJson.Dependencies;
-        _dbContext.Dependencies.Add(dependency);
+        else
+        {
+            dependency.Content = packageJson.Dependencies;
+        }
     }
 }
 

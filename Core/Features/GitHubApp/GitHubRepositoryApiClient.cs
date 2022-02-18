@@ -1,6 +1,8 @@
 ﻿using System.IO.Compression;
+using System.Net.Http.Json;
 using Core.Extensions;
 using Core.Features.GitHubApp.ApiModels;
+using Core.Features.Projects.Models;
 
 namespace Core.Features.GitHubApp;
 
@@ -13,12 +15,12 @@ public class GitHubRepositoryApiClient : GitHubBaseApi
     /// <summary>
     /// Finds the latest artifact and downloads it.
     /// </summary>
-    /// <param name="repositoryUrl">to find artifacts</param>
+    /// <param name="repository">to find artifacts</param>
     /// <param name="targetDirectory">directory </param>
     /// <returns>path to unzipped artifact or null if no artifact exists</returns>
-    public async Task<string?> GetLatestArtifacts(string repositoryUrl, string targetDirectory)
+    public async Task<string?> GetLatestArtifacts(GitRepository repository, string targetDirectory)
     {
-        var url = $"{repositoryUrl}/actions/artifacts".Replace("https://github.com/", $"{Host}/repos/");
+        var url = $"{repository.Url}/actions/artifacts".Replace("https://github.com/", $"{Host}/repos/");
         HttpResponseMessage response = await CreateHttpClient().GetAsync(url);
         var data =  await response.ReadJsonAsync<GitHubArtifactListResponse>();
         if (data.Count > 0 && !data.Artifacts[0].Expired)
@@ -28,6 +30,17 @@ public class GitHubRepositoryApiClient : GitHubBaseApi
 
         return null;
     }
+
+    /// <summary>
+    /// Reads the repository detail and dependabot alerts from GraphQL endpoint.
+    /// </summary>
+    public async Task<GitHubRepositoryResponse> GetRepositoryDetailAsync(GitRepository repository)
+    {
+        var request = new GitHubRepositoryRequest(repository.Url);
+        HttpResponseMessage response = await CreateHttpClient().PostAsJsonAsync("/graphql", request);
+        Console.WriteLine(await response.Content.ReadAsStringAsync());
+        return await response.ReadJsonAsync<GitHubRepositoryResponse>();
+    } 
     
     private async Task<string> DownloadArtifactAsync(GitHubArtifactListDetail artifact, string targetDirectory)
     {

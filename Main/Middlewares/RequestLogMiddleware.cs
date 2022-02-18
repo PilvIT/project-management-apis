@@ -24,7 +24,7 @@
             finally
             {
                 var duration = (DateTime.UtcNow - startTime).TotalMilliseconds;
-
+                
                 _logger.LogInformation(
                     "{method} {url}{query} {statusCode} {duration}ms",
                     httpContext.Request.Method,

@@ -19,18 +19,6 @@ public class ProjectApi : ApiBase
         _dbContext = dbContext;
     }
 
-    [HttpGet]
-    public List<ProjectListDetail> GetProjects()
-    {
-        return _dbContext.Projects
-            .Include(p => p.Group)
-            .Select(p => new ProjectListDetail
-            {
-                Id = p.Id,
-                DisplayName = $"{p.Group!.Name} / {p.Name}"
-            }).ToList();
-    }
-
     [HttpPost]
     public ProjectDetailModel CreateProject(ProjectCreateModel request)
     {
@@ -60,9 +48,22 @@ public class ProjectApi : ApiBase
             Repositories = new List<GitRepository>()
         };
     }
+    
+    
+    [HttpGet]
+    public List<ProjectListDetail> ListProjects()
+    {
+        return _dbContext.Projects
+            .Include(p => p.Group)
+            .Select(p => new ProjectListDetail
+            {
+                Id = p.Id,
+                DisplayName = $"{p.Group!.Name} / {p.Name}"
+            }).ToList();
+    }
 
     [HttpGet("{id:guid}")]
-    public ActionResult<ProjectDetailModel> GetProject(Guid id)
+    public ActionResult<ProjectDetailModel> RetrieveProject(Guid id)
     {
         try
         {
@@ -71,9 +72,7 @@ public class ProjectApi : ApiBase
                 .Include(m => m.GitRepositories)
                 .ThenInclude(m => m.Technologies)
                 .Single(m => m.Id == id);
-
-            project.GitRepositories.ToList();
-
+            
             return new ProjectDetailModel
             {
                 Id = project.Id,
@@ -87,5 +86,18 @@ public class ProjectApi : ApiBase
             // The project does not exist
             return new NotFoundResult();
         }
+    }
+
+    [HttpDelete("{id:guid}")]
+    public ActionResult DeleteProject(Guid id)
+    {
+        Project? project = _dbContext.Projects.Find(id);
+        if (project != null)
+        {
+            _dbContext.Projects.Remove(project);
+            _dbContext.SaveChanges();
+        }
+
+        return new OkObjectResult(new { });
     }
 }

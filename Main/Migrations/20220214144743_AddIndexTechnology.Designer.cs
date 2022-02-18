@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Core;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,9 +13,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Main.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220214144743_AddIndexTechnology")]
+    partial class AddIndexTechnology
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -59,13 +61,6 @@ namespace Main.Migrations
                         .HasColumnType("uuid")
                         .HasDefaultValueSql("gen_random_uuid()");
 
-                    b.Property<string>("Description")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
-
-                    b.Property<bool>("IsPublic")
-                        .HasColumnType("boolean");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(150)
@@ -84,44 +79,6 @@ namespace Main.Migrations
                     b.HasIndex("ProjectId");
 
                     b.ToTable("GitRepositories");
-                });
-
-            modelBuilder.Entity("Core.Features.Projects.Models.IssueLog", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasDefaultValueSql("gen_random_uuid()");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<double>("CvssScore")
-                        .HasColumnType("double precision");
-
-                    b.Property<string>("DetailLink")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<bool>("IsResolved")
-                        .HasColumnType("boolean");
-
-                    b.Property<int>("Level")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Message")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
-
-                    b.Property<Guid>("RepositoryId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RepositoryId");
-
-                    b.ToTable("IssueLogs");
                 });
 
             modelBuilder.Entity("Core.Features.Projects.Models.Project", b =>
@@ -310,67 +267,6 @@ namespace Main.Migrations
                     b.ToTable("Profiles");
                 });
 
-            modelBuilder.Entity("Core.Features.VulnerabilityManagement.Models.VulnerabilityAlert", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasDefaultValueSql("gen_random_uuid()");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<double>("CvssScore")
-                        .HasColumnType("double precision");
-
-                    b.Property<string>("DescriptionLink")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Ecosystem")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<bool>("IsTransitive")
-                        .HasColumnType("boolean");
-
-                    b.Property<Guid>("IssueLogId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("ManifestPath")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
-
-                    b.Property<string>("PackageName")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<string>("PatchedVersion")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<Guid>("RepositoryId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("VulnerableVersions")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RepositoryId");
-
-                    b.HasIndex("PackageName", "ManifestPath", "DescriptionLink")
-                        .IsUnique();
-
-                    b.ToTable("VulnerabilityAlerts");
-                });
-
             modelBuilder.Entity("GitRepositoryTechnology", b =>
                 {
                     b.Property<Guid>("GitRepositoriesId")
@@ -509,17 +405,6 @@ namespace Main.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Core.Features.Projects.Models.IssueLog", b =>
-                {
-                    b.HasOne("Core.Features.Projects.Models.GitRepository", "Repository")
-                        .WithMany()
-                        .HasForeignKey("RepositoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Repository");
-                });
-
             modelBuilder.Entity("Core.Features.Projects.Models.Project", b =>
                 {
                     b.HasOne("Core.Features.Projects.Models.ProjectGroup", "Group")
@@ -538,17 +423,6 @@ namespace Main.Migrations
                         .HasForeignKey("Core.Features.Users.Models.Profile", "AppUserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("Core.Features.VulnerabilityManagement.Models.VulnerabilityAlert", b =>
-                {
-                    b.HasOne("Core.Features.Projects.Models.GitRepository", "Repository")
-                        .WithMany()
-                        .HasForeignKey("RepositoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Repository");
                 });
 
             modelBuilder.Entity("GitRepositoryTechnology", b =>

@@ -1,6 +1,6 @@
-﻿
-using Core.Features.Projects.Models;
+﻿using Core.Features.Projects.Models;
 using Core.Features.Users.Models;
+using Core.Features.VulnerabilityManagement.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,10 +15,12 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid>
 
     public DbSet<Dependency> Dependencies { get; set; } = null!;
     public DbSet<GitRepository> GitRepositories { get; set; } = null!;
+    public DbSet<IssueLog> IssueLogs { get; set; } = null!;
     public DbSet<Profile> Profiles { get; set; } = null!;
     public DbSet<ProjectGroup> ProjectGroups { get; set; } = null!;
     public DbSet<Project> Projects { get; set; } = null!;
     public DbSet<Technology> Technologies { get; set; } = null!;
+    public DbSet<VulnerabilityAlert> VulnerabilityAlerts { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -26,8 +28,10 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid>
         builder.HasPostgresExtension("pgcrypto");
 
         builder.ApplyConfiguration(new GitRepositoryConfiguration());
+        builder.ApplyConfiguration(new IssueLogConfiguration());
         builder.ApplyConfiguration(new ProjectGroupConfiguration());
         builder.ApplyConfiguration(new ProjectConfiguration());
         builder.ApplyConfiguration(new ProfileConfiguration());
+        builder.ApplyConfiguration(new VulnerabilityAlertConfiguration());
     } 
 }
