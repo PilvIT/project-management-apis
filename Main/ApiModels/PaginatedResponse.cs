@@ -13,6 +13,5 @@ public class PaginatedResponse<TModel>
         int page = 1)
     {
         Queryable = queryable.Skip((page-1)*size).Take(size);
-        Console.WriteLine(Queryable.Count());
     }
 }

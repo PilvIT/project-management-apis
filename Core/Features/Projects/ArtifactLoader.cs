@@ -28,15 +28,15 @@ public class ArtifactLoader
 
     private async Task InferTechnologies(GitRepository repository)
     {
-        await _dbContext.Entry(repository).Collection(r => r.Dependencies).LoadAsync();
-        await _dbContext.Entry(repository).Collection(r => r.Technologies).LoadAsync();
+        await _dbContext.Entry(repository).Collection(r => r.Dependencies!).LoadAsync();
+        await _dbContext.Entry(repository).Collection(r => r.Technologies!).LoadAsync();
 
         foreach (Dependency dependency in repository.Dependencies)
         {
             foreach (var (name, version) in dependency.Content)
             {
                 Technology? t = _dbContext.Technologies.SingleOrDefault(t => t.Name == name);
-                if (t != null && !repository.Technologies.Exists(tx => tx.Name == t.Name))
+                if (t != null && !repository.Technologies!.Exists(tx => tx.Name == t.Name))
                 {
                     repository.Technologies.Add(t);
                 }
@@ -53,7 +53,7 @@ public class ArtifactLoader
             return;
         }
 
-        string data = await File.ReadAllTextAsync(filePath);
+        var data = await File.ReadAllTextAsync(filePath);
         var packageJson = JsonSerializer.Deserialize<NpmPackageJson>(data)!;
         
         Dependency? dependency = _dbContext.Dependencies

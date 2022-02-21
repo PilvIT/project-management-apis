@@ -19,6 +19,8 @@ public class GitRepository : BaseModel
     
     [ForeignKey(nameof(Project))]
     public Guid ProjectId { get; set; }
+    
+    public List<IssueLog>? IssueLogs { get; set; }
 }
 
 public class GitRepositoryConfiguration : BaseModelConfiguration<GitRepository>

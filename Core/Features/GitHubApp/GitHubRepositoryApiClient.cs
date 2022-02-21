@@ -6,7 +6,7 @@ using Core.Features.Projects.Models;
 
 namespace Core.Features.GitHubApp;
 
-public class GitHubRepositoryApiClient : GitHubBaseApi
+public class GitHubRepositoryApiClient : GitHubBaseApi, IGitHubRepositoryApiClient
 {
     public GitHubRepositoryApiClient(string appName, GitHubTokens tokens) : base(appName, tokens)
     {
@@ -38,7 +38,7 @@ public class GitHubRepositoryApiClient : GitHubBaseApi
     {
         var request = new GitHubRepositoryRequest(repository.Url);
         HttpResponseMessage response = await CreateHttpClient().PostAsJsonAsync("/graphql", request);
-        Console.WriteLine(await response.Content.ReadAsStringAsync());
+        // TODO: Error handling
         return await response.ReadJsonAsync<GitHubRepositoryResponse>();
     } 
     

@@ -23,24 +23,25 @@ public class RepositoryResponse
     /// </summary>
     public string Visibility { get; set; } = null!;
 
-    public VulnerabilityAlerts VulnerabilityAlerts { get; set; } = null!;
+    public VulnerabilityAlertsGraphQL VulnerabilityAlerts { get; set; } = null!;
 }
 
-[EditorBrowsable(EditorBrowsableState.Never)]
-public class VulnerabilityAlerts
-{
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    public class Vulnerability
-    {
-        [JsonPropertyName("number")]
-        public int Id { get; set; } 
-        public DateTime CreatedAt { get; set; }
-        public string VulnerableManifestPath { get; set; } = null!;
-        public SecurityVulnerability SecurityVulnerability { get; set; } = null!;
-    }
+// TODO: Rename these to GQL
 
-    public List<Vulnerability> Nodes { get; set; } = null!;
+[EditorBrowsable(EditorBrowsableState.Never)]
+public class VulnerabilityAlertsGraphQL
+{
+    public List<VulnerabilityNodeGraphQL> Nodes { get; set; } = null!;
     public int TotalCount { get; set; }
+}
+
+public class VulnerabilityNodeGraphQL
+{
+    [JsonPropertyName("number")]
+    public int Id { get; set; } 
+    public DateTime CreatedAt { get; set; }
+    public string VulnerableManifestPath { get; set; } = null!;
+    public SecurityVulnerability SecurityVulnerability { get; set; } = null!;
 }
 
 [EditorBrowsable(EditorBrowsableState.Never)]

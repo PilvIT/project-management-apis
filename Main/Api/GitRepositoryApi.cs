@@ -21,34 +21,56 @@ public class GitRepositoryApi : ApiBase
     private readonly IConfiguration _conf;
 
     private readonly string _artifactDirectory;
-    
-    public GitRepositoryApi(AppDbContext dbContext, IAuth auth, IConfiguration conf, IWebHostEnvironment env) : base(auth)
+
+    public GitRepositoryApi(AppDbContext dbContext, IAuth auth, IConfiguration conf, IWebHostEnvironment env) :
+        base(auth)
     {
         _conf = conf;
         _dbContext = dbContext;
-        
+
         _artifactDirectory = $"{env.ContentRootPath}/../{conf["Directories:GitHubArtifacts"]}";
     }
-    
+
     [HttpGet]
-    public async Task<PaginatedResponse<GitRepositoryListDetail>> ListRepositories([FromQuery] Guid projectId)
+    public PaginatedResponse<GitRepositoryListDetail> ListRepositories(
+        [FromQuery] Guid? projectId,
+        [FromQuery] bool? hasIssues)
     {
-        IQueryable<GitRepositoryListDetail> queryable = _dbContext.GitRepositories
+        IQueryable<GitRepository> queryable = _dbContext.GitRepositories
             .Include(r => r.Technologies)
-            .Where(r => r.ProjectId == projectId)
-            .Select(r => new GitRepositoryListDetail
-            {
-                Id = r.Id,
-                Name = r.Name,
-                Technologies = r.Technologies!,
-                Url = r.Url
-            });
-        
-        return new PaginatedResponse<GitRepositoryListDetail>(queryable);
-    } 
-    
-    [HttpGet("{id:guid}/refresh")]
-    public async Task<ActionResult> RefreshRepositoryInfo(Guid id)
+            .Include(r => r.IssueLogs);
+
+        if (hasIssues == true)
+        {
+            queryable = queryable.Where(g => g.IssueLogs!.Count > 0);
+        }
+
+        if (projectId != null)
+        {
+            queryable = queryable.Where(r => r.ProjectId == projectId);
+        }
+
+        IQueryable<GitRepositoryListDetail> repositories = queryable.Select(r => new GitRepositoryListDetail
+        {
+            Id = r.Id,
+            Name = r.Name,
+            Technologies = r.Technologies!,
+            Issues = r.IssueLogs!,
+            Description = r.Description!,
+            Url = r.Url,
+            ProjectId = r.ProjectId
+        });
+
+        return new PaginatedResponse<GitRepositoryListDetail>(repositories);
+    }
+
+    /// <summary>
+    /// Manually refresh the repository details from GitHub
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    [HttpPost("{id:guid}/refresh")]
+    public async Task<ActionResult> RefreshRepository(Guid id)
     {
         GitRepository? repository = await _dbContext.GitRepositories.FindAsync(id);
         if (repository == null)
@@ -57,26 +79,14 @@ public class GitRepositoryApi : ApiBase
         }
 
         var client = new GitHubRepositoryApiClient(_conf.GetGitHubAppName(), GitHubTokens);
-        GitHubRepositoryResponse repo = await client.GetRepositoryDetailAsync(repository);
-
-        repository.Description = repo.Data.Repository.Description;
-        repository.IsPublic = repo.Data.Repository.Visibility == "PUBLIC";
-
-        var alertService = new VulnerabilityAlertService(_dbContext);
-        alertService.BulkUpdate(repository, repo.Data.Repository.VulnerabilityAlerts.Nodes);
-        
-        
-        /*var artifactPath = await client.GetLatestArtifacts(repository.Url, _artifactDirectory);
-        if (artifactPath != null)
-        {
-            var artifactLoader = new ArtifactLoader(artifactPath, _dbContext);
-            await artifactLoader.LoadToDbAsync(repository);
-        }*/
-        
-
-        return new OkObjectResult(new {});
+        var refreshService = new GitRepositoryRefreshService(
+            dbContext: _dbContext,
+            repository: repository,
+            apiClient: client);
+        await refreshService.RefreshAsync(_artifactDirectory);
+        return new OkObjectResult(new { });
     }
-    
+
     [HttpPost]
     public ActionResult<GitRepository> CreateGitRepository(GitRepositoryCreateModel request)
     {
@@ -88,7 +98,7 @@ public class GitRepositoryApi : ApiBase
                 { "message", $"Project {request.ProjectId} not found!" }
             });
         }
-        
+
         var repository = new GitRepository
         {
             Name = request.Url.Split("/").Last(),
