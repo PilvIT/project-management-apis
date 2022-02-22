@@ -4,14 +4,15 @@ namespace Main.ApiModels;
 
 public class PaginatedResponse<TModel>
 {
-    public IQueryable<TModel> Queryable;
+    private readonly IQueryable<TModel> _queryable;
 
-    public IList Data => Queryable.ToList();
+    public int Count => _queryable.Count();
+    public IList Data => _queryable.ToList();
     
     public PaginatedResponse(IQueryable<TModel> queryable,
         int size = 10,
         int page = 1)
     {
-        Queryable = queryable.Skip((page-1)*size).Take(size);
+        _queryable = queryable.Skip((page-1)*size).Take(size);
     }
 }

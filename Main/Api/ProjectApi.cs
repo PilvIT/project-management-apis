@@ -2,6 +2,7 @@
 using Core.Features.Projects.ApiModels;
 using Core.Features.Projects.Models;
 using Core.Features.Projects.ViewModels;
+using Main.ApiModels;
 using Main.Injectables.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -51,15 +52,17 @@ public class ProjectApi : ApiBase
     
     
     [HttpGet]
-    public List<ProjectListDetail> ListProjects()
+    public PaginatedResponse<ProjectListDetail> ListProjects()
     {
-        return _dbContext.Projects
+        IQueryable<ProjectListDetail> queryable = _dbContext.Projects
             .Include(p => p.Group)
             .Select(p => new ProjectListDetail
             {
                 Id = p.Id,
                 DisplayName = $"{p.Group!.Name} / {p.Name}"
-            }).ToList();
+            });
+
+        return new PaginatedResponse<ProjectListDetail>(queryable);
     }
 
     [HttpGet("{id:guid}")]
