@@ -20,7 +20,7 @@ public static class ConfigurationExtensions
     
     private static RsaSecurityKey ReadRsaKey(string path)
     {
-        string fileContent = File.ReadAllText(path);
+        var fileContent = File.ReadAllText(path);
         var rsaKey = RSA.Create();
         rsaKey.ImportFromPem(fileContent);
         return new RsaSecurityKey(rsaKey);

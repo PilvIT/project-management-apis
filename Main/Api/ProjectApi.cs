@@ -2,8 +2,8 @@
 using Core.Features.Projects.ApiModels;
 using Core.Features.Projects.ViewModels;
 using Core.Models;
-using Main.ApiModels;
 using Main.Injectables.Interfaces;
+using Main.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
@@ -11,11 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage;
 namespace Main.Api;
 
 [Route("projects")]
-public class ProjectApi : ApiBase
+public class ProjectApi : BaseApi
 {
     private readonly AppDbContext _dbContext;
 
-    public ProjectApi(AppDbContext dbContext, IAuth auth) : base(auth)
+    public ProjectApi(AppDbContext dbContext, IAuthService authService) : base(authService)
     {
         _dbContext = dbContext;
     }
@@ -52,7 +52,7 @@ public class ProjectApi : ApiBase
     
     
     [HttpGet]
-    public PaginatedResponse<ProjectListDetail> ListProjects()
+    public Paginated<ProjectListDetail> ListProjects()
     {
         IQueryable<ProjectListDetail> queryable = _dbContext.Projects
             .Include(p => p.Group)
@@ -62,7 +62,7 @@ public class ProjectApi : ApiBase
                 DisplayName = $"{p.Group!.Name} / {p.Name}"
             });
 
-        return new PaginatedResponse<ProjectListDetail>(queryable);
+        return new Paginated<ProjectListDetail>(queryable);
     }
 
     [HttpGet("{id:guid}")]

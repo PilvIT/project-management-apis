@@ -5,8 +5,8 @@ using Core.Features.GitHub.Interfaces;
 using Core.Features.GitHub.ViewModels;
 using Core.Features.Users;
 using Core.Models;
-using Main.ApiModels;
 using Main.Injectables.Interfaces;
+using Main.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -34,21 +34,21 @@ public class AuthorizationApi : ControllerBase
     
     [AllowAnonymous]
     [HttpPost("auth")]
-    public GitHubOAuthInitResponse GetAuthorizationUrl(AuthorizationRequest requestData)
+    public GitHubOAuthInitResponse GetAuthorizationUrl(AuthInitRequest requestData)
     {
         return _github.OAuthClient.GetUrl(requestData.RedirectUri);
     }
 
     [AllowAnonymous]
     [HttpPost("exchange-token")]
-    public async Task<AuthorizationTokenResponse> ExchangeToken(AuthorizationTokenRequest requestData)
+    public async Task<AuthTokenExchangeResponse> ExchangeToken(AuthTokenExchangeRequest requestData)
     {
-        GitHubTokenResponse tokenResponse = await _github.OAuthClient.ExchangeTokenAsync(
+        GitHubTokenDetail tokenDetail = await _github.OAuthClient.ExchangeTokenAsync(
             code: requestData.Code,
             redirectUri: requestData.RedirectUri,
             state: requestData.State);
 
-        IGitHubUserApiClient userApi = _github.GetUserApiClient(accessToken: tokenResponse.AccessToken);
+        IGitHubUserApiClient userApi = _github.GetUserApiClient(accessToken: tokenDetail.AccessToken);
         GitHubUserDetail gitHubUserDetail = await userApi.GetUserAsync();
         
         AppUser? user = _dbContext.Users
@@ -61,22 +61,22 @@ public class AuthorizationApi : ControllerBase
             user = await userCreateService.CreateAsync(gitHubUserDetail.Id);
         }
 
-        var response = new AuthorizationTokenResponse
+        var response = new AuthTokenExchangeResponse
         {
             UserId = user.Id,
-            Token = GenerateJwtToken(user, tokenResponse)
+            Token = GenerateJwtToken(user, tokenDetail)
         };
 
         return response;
     }
 
-    private string GenerateJwtToken(AppUser user, GitHubTokenResponse tokenResponse)
+    private string GenerateJwtToken(AppUser user, GitHubTokenDetail tokenDetail)
     {
         var claims = new List<Claim>
         {
             new Claim(ClaimTypes.Name, user.Id.ToString()),
-            new Claim("gh-access-token", tokenResponse.AccessToken),
-            new Claim("gh-refresh-token", tokenResponse.RefreshToken)
+            new Claim("gh-access-token", tokenDetail.AccessToken),
+            new Claim("gh-refresh-token", tokenDetail.RefreshToken)
         };
         
         DateTime expiresAt = DateTime.UtcNow.AddHours(8);

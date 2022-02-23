@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Diagnostics;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using Core.Models;
 
@@ -30,7 +31,8 @@ public class ArtifactLoader
     {
         await _dbContext.Entry(repository).Collection(r => r.Dependencies!).LoadAsync();
         await _dbContext.Entry(repository).Collection(r => r.Technologies!).LoadAsync();
-
+        Debug.Assert(repository.Dependencies != null);
+        
         foreach (Dependency dependency in repository.Dependencies)
         {
             foreach (var (name, version) in dependency.Content)

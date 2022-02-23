@@ -1,27 +1,25 @@
 ﻿using Core;
 using Core.Features.GitHub;
 using Core.Features.Projects;
-using Core.Features.Projects.ApiModels;
 using Core.Features.Projects.ViewModels;
-using Core.Features.VulnerabilityManagement;
 using Core.Models;
-using Main.ApiModels;
 using Main.Injectables.Interfaces;
+using Main.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Main.Api;
 
 [Route("git-repositories")]
-public class GitRepositoryApi : ApiBase
+public class GitRepositoryApi : BaseApi
 {
     private readonly AppDbContext _dbContext;
     private readonly IConfiguration _conf;
 
     private readonly string _artifactDirectory;
 
-    public GitRepositoryApi(AppDbContext dbContext, IAuth auth, IConfiguration conf, IWebHostEnvironment env) :
-        base(auth)
+    public GitRepositoryApi(AppDbContext dbContext, IAuthService authService, IConfiguration conf, IWebHostEnvironment env) :
+        base(authService)
     {
         _conf = conf;
         _dbContext = dbContext;
@@ -30,7 +28,7 @@ public class GitRepositoryApi : ApiBase
     }
 
     [HttpGet]
-    public PaginatedResponse<GitRepositoryListDetail> ListRepositories(
+    public Paginated<GitRepositoryListDetail> ListRepositories(
         [FromQuery] Guid? projectId,
         [FromQuery] bool? hasIssues)
     {
@@ -59,7 +57,7 @@ public class GitRepositoryApi : ApiBase
             ProjectId = r.ProjectId
         });
 
-        return new PaginatedResponse<GitRepositoryListDetail>(repositories);
+        return new Paginated<GitRepositoryListDetail>(repositories);
     }
 
     /// <summary>
@@ -76,7 +74,7 @@ public class GitRepositoryApi : ApiBase
             return new NotFoundResult();
         }
 
-        var client = new GitHubRepositoryApiClient(_conf.GetGitHubAppName(), GitHubTokenResponse);
+        var client = new GitHubRepositoryApiClient(_conf.GetGitHubAppName(), GitHubTokenDetail);
         var refreshService = new GitRepositoryRefreshService(
             dbContext: _dbContext,
             repository: repository,

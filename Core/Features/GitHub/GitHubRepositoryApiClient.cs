@@ -9,7 +9,7 @@ namespace Core.Features.GitHub;
 
 public class GitHubRepositoryApiClient : GitHubBaseApi, IGitHubRepositoryApiClient
 {
-    public GitHubRepositoryApiClient(string appName, GitHubTokenResponse tokenResponse) : base(appName, tokenResponse)
+    public GitHubRepositoryApiClient(string appName, GitHubTokenDetail tokenDetail) : base(appName, tokenDetail)
     {
     }
     

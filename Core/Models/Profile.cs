@@ -15,6 +15,9 @@ public class Profile : BaseModel
 
     [Required]
     public long GitHubId { get; set; }
+
+    [StringLength(200)]
+    public string DisplayName { get; set; } = null!;
 }
 
 public class ProfileConfiguration : BaseModelConfiguration<Profile>

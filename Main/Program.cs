@@ -21,7 +21,7 @@ builder.Services.AddHttpLogging(options =>
 
 // Dependency injections
 builder.Services.AddTransient<IGitHubService, GitHubService>();
-builder.Services.AddTransient<IAuth, Auth>();
+builder.Services.AddTransient<IAuthService, AuthServiceService>();
 
 WebApplication app = builder.Build();
 

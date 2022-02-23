@@ -1,4 +1,5 @@
-﻿using Core;
+﻿using System.Diagnostics;
+using Core;
 using Core.Features.Users.ViewModels;
 using Main.Injectables.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -6,11 +7,11 @@ using Microsoft.AspNetCore.Mvc;
 namespace Main.Api;
 
 [Route("user")]
-public class UserApi : ApiBase
+public class UserApi : BaseApi
 {
     private readonly AppDbContext _dbContext;
     
-    public UserApi(AppDbContext dbContext, IAuth auth) : base(auth)
+    public UserApi(AppDbContext dbContext, IAuthService authService) : base(authService)
     {
         _dbContext = dbContext;
     }
@@ -19,10 +20,12 @@ public class UserApi : ApiBase
     public UserDetail GetUser()
     {
         _dbContext.Entry(User).Reference(u => u.Profile).Load();
+        Debug.Assert(User.Profile != null);
+        
         return new UserDetail
         {
             Id = User.Id,
-            Name = "Luke Skywalker"
+            Name = User.Profile.DisplayName
         };
     }
 }

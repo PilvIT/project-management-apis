@@ -17,5 +17,5 @@ public interface IGitHubOAuthClient
     /// <param name="redirectUri">location redirected from GitHub</param>
     /// <param name="state">state received assigned to uri</param>
     /// <returns>access and refresh tokens to GitHub</returns>
-    public Task<GitHubTokenResponse> ExchangeTokenAsync(string code, string redirectUri, string state);
+    public Task<GitHubTokenDetail> ExchangeTokenAsync(string code, string redirectUri, string state);
 }

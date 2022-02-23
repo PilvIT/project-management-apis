@@ -2,7 +2,7 @@
 
 namespace Core.Features.GitHub.ViewModels;
 
-public class GitHubTokenResponse
+public class GitHubTokenDetail
 {
     [JsonPropertyName("access_token")]
     public string AccessToken { get; set; } = null!;

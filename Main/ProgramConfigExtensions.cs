@@ -2,7 +2,6 @@
 using System.Text.Json.Serialization;
 using Core;
 using Core.Models;
-using Main.Constants;
 using Main.Exceptions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -82,7 +81,7 @@ public static class ServiceExtensions
 
     public static void AddDatabases(this IServiceCollection services, IConfiguration configuration)
     {
-        var connectionString = configuration.GetConnectionString(ConfKeys.MainDatabase);
+        var connectionString = configuration.GetConnectionString("PostgreSQL");
         services.AddDbContext<AppDbContext>(options =>
         {
             options.UseNpgsql(connectionString, npgsqlOptions =>

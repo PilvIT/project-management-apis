@@ -10,8 +10,8 @@ using Core.Features.GitHub;
 using Core.Features.GitHub.Interfaces;
 using Core.Features.GitHub.ViewModels;
 using Core.Models;
-using Main.ApiModels;
 using Main.Injectables.Interfaces;
+using Main.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Tests.Templates;
@@ -37,7 +37,7 @@ public class AuthorizationApiTest : ApiTestCase
             _mockGitHubAuthorization = new Mock<IGitHubOAuthClient>();
             _mockGitHubAuthorization
                 .Setup(m => m.ExchangeTokenAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()).Result)
-                .Returns(new GitHubTokenResponse
+                .Returns(new GitHubTokenDetail
                 {
                     AccessToken = "access_token",
                     RefreshToken = "refresh_token"
@@ -76,7 +76,7 @@ public class AuthorizationApiTest : ApiTestCase
     public async Task GetAuthorizationUrl()
     {
         HttpClient client = GetAnonClient();
-        var requestData = new AuthorizationRequest { RedirectUri = RedirectUri };
+        var requestData = new AuthInitRequest { RedirectUri = RedirectUri };
         HttpResponseMessage response = await client.PostAsJsonAsync("/github/auth", requestData);
         AssertContext(() => Assert.Equal(HttpStatusCode.OK, response.StatusCode), response);
         var responseData = await response.ReadJsonAsync<GitHubOAuthInitResponse>();
@@ -102,7 +102,7 @@ public class AuthorizationApiTest : ApiTestCase
     public async Task ExchangeTokenForNewUser()
     {
         HttpClient client = GetAnonClient();
-        var requestData = new AuthorizationTokenRequest
+        var requestData = new AuthTokenExchangeRequest
         {
             Code = "code-from-github",
             State = "state-as-uuid",
@@ -110,7 +110,7 @@ public class AuthorizationApiTest : ApiTestCase
         };
         HttpResponseMessage response = await client.PostAsJsonAsync("/github/exchange-token", requestData);
         AssertContext(() => Assert.Equal(HttpStatusCode.OK, response.StatusCode), response);
-        var responseData = await response.ReadJsonAsync<AuthorizationTokenResponse>();
+        var responseData = await response.ReadJsonAsync<AuthTokenExchangeResponse>();
         
         // Assert mock calls
         _mockGitHubAuthorization.Verify(m => m.ExchangeTokenAsync(It.IsAny<string>(), RedirectUri, It.IsAny<string>()), Times.Once);

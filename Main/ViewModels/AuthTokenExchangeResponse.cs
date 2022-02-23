@@ -1,6 +1,6 @@
-﻿namespace Main.ApiModels;
+﻿namespace Main.ViewModels;
 
-public class AuthorizationTokenResponse
+public class AuthTokenExchangeResponse
 {
     public Guid UserId { get; set; }
     public string Token { get; set; } = null!;

@@ -3,8 +3,8 @@ using Core.Models;
 
 namespace Main.Injectables.Interfaces;
 
-public interface IAuth
+public interface IAuthService
 {
     AppUser User { get; }
-    GitHubTokenResponse GitHubTokenResponse { get; }
+    GitHubTokenDetail GitHubTokenDetail { get; }
 }

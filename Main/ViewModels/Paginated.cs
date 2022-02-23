@@ -1,15 +1,15 @@
 ﻿using System.Collections;
 
-namespace Main.ApiModels;
+namespace Main.ViewModels;
 
-public class PaginatedResponse<TModel>
+public class Paginated<TModel>
 {
     private readonly IQueryable<TModel> _queryable;
 
     public int Count => _queryable.Count();
     public IList Data => _queryable.ToList();
     
-    public PaginatedResponse(IQueryable<TModel> queryable,
+    public Paginated(IQueryable<TModel> queryable,
         int size = 10,
         int page = 1)
     {

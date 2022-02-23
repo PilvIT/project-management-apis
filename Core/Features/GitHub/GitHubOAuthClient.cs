@@ -44,7 +44,7 @@ public class GitHubOAuthClient : IGitHubOAuthClient
     }
 
     /// <inheritdoc />
-    public async Task<GitHubTokenResponse> ExchangeTokenAsync(string code, string redirectUri, string state)
+    public async Task<GitHubTokenDetail> ExchangeTokenAsync(string code, string redirectUri, string state)
     {
         var requestData = new Dictionary<string, string>
         {
@@ -56,6 +56,6 @@ public class GitHubOAuthClient : IGitHubOAuthClient
         };
 
         HttpResponseMessage response = await _httpClient.PostAsJsonAsync("/login/oauth/access_token", requestData);
-        return (await response.Content.ReadFromJsonAsync<GitHubTokenResponse>())!;
+        return (await response.Content.ReadFromJsonAsync<GitHubTokenDetail>())!;
     }
 }

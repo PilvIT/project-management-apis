@@ -10,16 +10,16 @@ namespace Main.Injectables;
 /// <summary>
 /// Handles the JWT token reads for API endpoints.
 /// </summary>
-public class Auth : IAuth
+public class AuthServiceService : IAuthService
 {
     public AppUser User { get; }
-    public GitHubTokenResponse GitHubTokenResponse => LoadGitHubTokens();
+    public GitHubTokenDetail GitHubTokenDetail => LoadGitHubTokens();
 
     private readonly AppDbContext _dbContext;
     private readonly HttpContext _httpContext;
-    private readonly ILogger<Auth> _logger;
+    private readonly ILogger<AuthServiceService> _logger;
 
-    public Auth(AppDbContext dbContext, IHttpContextAccessor httpContextAccessor, ILogger<Auth> logger)
+    public AuthServiceService(AppDbContext dbContext, IHttpContextAccessor httpContextAccessor, ILogger<AuthServiceService> logger)
     {
         _dbContext = dbContext;
         _httpContext = httpContextAccessor.HttpContext!;
@@ -27,12 +27,12 @@ public class Auth : IAuth
         User = LoadUser();
     }
 
-    private GitHubTokenResponse LoadGitHubTokens()
+    private GitHubTokenDetail LoadGitHubTokens()
     {
         Claim accessToken = _httpContext.User.Claims.Single(claim => claim.Type == "gh-access-token");
         Claim refreshToken = _httpContext.User.Claims.Single(claim => claim.Type == "gh-refresh-token");
 
-        return new GitHubTokenResponse()
+        return new GitHubTokenDetail()
         {
             AccessToken = accessToken.Value,
             RefreshToken = refreshToken.Value

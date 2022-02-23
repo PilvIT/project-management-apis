@@ -1,6 +1,6 @@
-﻿namespace Main.ApiModels;
+﻿namespace Main.ViewModels;
 
-public class AuthorizationTokenRequest
+public class AuthTokenExchangeRequest
 {
     public string Code { get; set; } = null!;
     public string RedirectUri { get; set; } = null!;

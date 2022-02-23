@@ -12,11 +12,11 @@ public class GitHubBaseApi
     protected const string Host = "https://api.github.com";
 
     private readonly string _userAgent;
-    private readonly GitHubTokenResponse _tokenResponse;
+    private readonly GitHubTokenDetail _tokenDetail;
 
-    protected GitHubBaseApi(string userAgent, GitHubTokenResponse tokenResponse)
+    protected GitHubBaseApi(string userAgent, GitHubTokenDetail tokenDetail)
     {
-        _tokenResponse = tokenResponse;
+        _tokenDetail = tokenDetail;
         _userAgent = userAgent;
     }
 
@@ -24,7 +24,7 @@ public class GitHubBaseApi
     {
         var client = new HttpClient();
         client.BaseAddress = new Uri(Host);
-        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("token", _tokenResponse.AccessToken);
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("token", _tokenDetail.AccessToken);
         client.DefaultRequestHeaders.Add(HeaderNames.Accept, "application/vnd.github.v3+json");
         client.DefaultRequestHeaders.Add(HeaderNames.UserAgent, _userAgent);
         return client;
