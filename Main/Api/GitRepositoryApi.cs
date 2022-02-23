@@ -1,12 +1,10 @@
 ﻿using Core;
-using Core.Features.GitHubApp;
-using Core.Features.GitHubApp.ApiModels;
+using Core.Features.GitHub;
 using Core.Features.Projects;
 using Core.Features.Projects.ApiModels;
-using Core.Features.Projects.Models;
 using Core.Features.Projects.ViewModels;
 using Core.Features.VulnerabilityManagement;
-using Core.Features.VulnerabilityManagement.Models;
+using Core.Models;
 using Main.ApiModels;
 using Main.Injectables.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -78,7 +76,7 @@ public class GitRepositoryApi : ApiBase
             return new NotFoundResult();
         }
 
-        var client = new GitHubRepositoryApiClient(_conf.GetGitHubAppName(), GitHubTokens);
+        var client = new GitHubRepositoryApiClient(_conf.GetGitHubAppName(), GitHubTokenResponse);
         var refreshService = new GitRepositoryRefreshService(
             dbContext: _dbContext,
             repository: repository,
@@ -88,7 +86,7 @@ public class GitRepositoryApi : ApiBase
     }
 
     [HttpPost]
-    public ActionResult<GitRepository> CreateGitRepository(GitRepositoryCreateModel request)
+    public ActionResult<GitRepository> CreateGitRepository(GitRepositoryCreateRequest request)
     {
         Project? project = _dbContext.Projects.Find(request.ProjectId);
         if (project == null)

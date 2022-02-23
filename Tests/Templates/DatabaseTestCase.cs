@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Core;
 using Core.Features.Users;
-using Core.Features.Users.Models;
+using Core.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;

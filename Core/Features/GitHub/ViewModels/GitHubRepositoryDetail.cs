@@ -1,20 +1,17 @@
-﻿using System.ComponentModel;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
-namespace Core.Features.GitHubApp.ApiModels;
+namespace Core.Features.GitHub.ViewModels;
 
 public class GitHubRepositoryResponse
 {
-    public DataResponse Data { get; set; } = null!;
+    public DataResponseGraphQL Data { get; set; } = null!;
 }
 
-[EditorBrowsable(EditorBrowsableState.Never)]
-public class DataResponse
+public class DataResponseGraphQL
 {
     public RepositoryResponse Repository { get; set; } = null!;
 }
 
-[EditorBrowsable(EditorBrowsableState.Never)]
 public class RepositoryResponse
 {
     public string Description { get; set; } = null!;
@@ -26,9 +23,6 @@ public class RepositoryResponse
     public VulnerabilityAlertsGraphQL VulnerabilityAlerts { get; set; } = null!;
 }
 
-// TODO: Rename these to GQL
-
-[EditorBrowsable(EditorBrowsableState.Never)]
 public class VulnerabilityAlertsGraphQL
 {
     public List<VulnerabilityNodeGraphQL> Nodes { get; set; } = null!;
@@ -41,11 +35,10 @@ public class VulnerabilityNodeGraphQL
     public int Id { get; set; } 
     public DateTime CreatedAt { get; set; }
     public string VulnerableManifestPath { get; set; } = null!;
-    public SecurityVulnerability SecurityVulnerability { get; set; } = null!;
+    public SecurityVulnerabilityGraphQL SecurityVulnerability { get; set; } = null!;
 }
 
-[EditorBrowsable(EditorBrowsableState.Never)]
-public class SecurityVulnerability
+public class SecurityVulnerabilityGraphQL
 {
     [JsonPropertyName("firstPatchedVersion")]
     public Dictionary<string, string> JsonFirstPatchedVersion { get; set; } = null!;
@@ -62,12 +55,11 @@ public class SecurityVulnerability
     [JsonIgnore]
     public string Ecosystem => JsonPackage["ecosystem"];
 
-    public Advisory Advisory { get; set; } = null!;
+    public AdvisoryGraphQL Advisory { get; set; } = null!;
 
 }
 
-[EditorBrowsable(EditorBrowsableState.Never)]
-public class Advisory
+public class AdvisoryGraphQL
 {
     public string Summary { get; set; } = null!;
 

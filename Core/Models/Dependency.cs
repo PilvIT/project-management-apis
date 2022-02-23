@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
-namespace Core.Features.Projects.Models;
+namespace Core.Models;
 
 [Index(nameof(Path), nameof(GitRepositoryId), IsUnique = true)]
 public class Dependency : BaseModel

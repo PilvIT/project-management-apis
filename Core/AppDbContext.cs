@@ -1,6 +1,4 @@
-﻿using Core.Features.Projects.Models;
-using Core.Features.Users.Models;
-using Core.Features.VulnerabilityManagement.Models;
+﻿using Core.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 

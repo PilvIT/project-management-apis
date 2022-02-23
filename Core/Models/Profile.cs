@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 
-namespace Core.Features.Users.Models;
+namespace Core.Models;
 
 [Index(nameof(GitHubId), IsUnique = true)]
 public class Profile : BaseModel

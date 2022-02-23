@@ -6,9 +6,10 @@ using System.Net.Http.Json;
 using System.Threading.Tasks;
 using System.Web;
 using Core.Extensions;
-using Core.Features.GitHubApp;
-using Core.Features.GitHubApp.ApiModels;
-using Core.Features.Users.Models;
+using Core.Features.GitHub;
+using Core.Features.GitHub.Interfaces;
+using Core.Features.GitHub.ViewModels;
+using Core.Models;
 using Main.ApiModels;
 using Main.Injectables.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,28 +25,28 @@ public class AuthorizationApiTest : ApiTestCase
     private const string OAuthClientSecret = "clientSecret";
     private const string RedirectUri = "http://localhost:3000";
 
-    private static Mock<IGitHubAuthorization> _mockGitHubAuthorization = null!;
+    private static Mock<IGitHubOAuthClient> _mockGitHubAuthorization = null!;
     private static Mock<IGitHubUserApiClient> _mockGitHubUserApiClient = null!;
     
     internal class MockGitHubService : IGitHubService
     {
-        public IGitHubAuthorization Authorization { get; }
+        public IGitHubOAuthClient OAuthClient { get; }
 
         public MockGitHubService()
         {
-            _mockGitHubAuthorization = new Mock<IGitHubAuthorization>();
+            _mockGitHubAuthorization = new Mock<IGitHubOAuthClient>();
             _mockGitHubAuthorization
                 .Setup(m => m.ExchangeTokenAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()).Result)
-                .Returns(new GitHubTokens
+                .Returns(new GitHubTokenResponse
                 {
                     AccessToken = "access_token",
                     RefreshToken = "refresh_token"
                 });
             _mockGitHubAuthorization
                 .Setup(m => m.GetUrl(It.IsAny<string>()))
-                .Returns(new GitHubAuthorization(clientId: OAuthClientId, clientSecret: OAuthClientSecret).GetUrl(RedirectUri));
+                .Returns(new GitHubOAuthClient(clientId: OAuthClientId, clientSecret: OAuthClientSecret).GetUrl(RedirectUri));
             
-            Authorization = _mockGitHubAuthorization.Object;
+            OAuthClient = _mockGitHubAuthorization.Object;
         }
         
         public IGitHubUserApiClient GetUserApiClient(string accessToken)
@@ -53,7 +54,7 @@ public class AuthorizationApiTest : ApiTestCase
             _mockGitHubUserApiClient = new Mock<IGitHubUserApiClient>();
             _mockGitHubUserApiClient
                 .Setup(m => m.GetUserAsync().Result)
-                .Returns(new GitHubUser
+                .Returns(new GitHubUserDetail
                 {
                     Id = GetSequentialId(),
                     Name = "John Doe"
@@ -78,7 +79,7 @@ public class AuthorizationApiTest : ApiTestCase
         var requestData = new AuthorizationRequest { RedirectUri = RedirectUri };
         HttpResponseMessage response = await client.PostAsJsonAsync("/github/auth", requestData);
         AssertContext(() => Assert.Equal(HttpStatusCode.OK, response.StatusCode), response);
-        var responseData = await response.ReadJsonAsync<GitHubAuthorizationUrl>();
+        var responseData = await response.ReadJsonAsync<GitHubOAuthInitResponse>();
         
         var uri = new Uri(responseData.Url);
         AssertContext(() =>

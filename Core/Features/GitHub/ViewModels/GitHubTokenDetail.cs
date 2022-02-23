@@ -1,8 +1,8 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Core.Features.GitHubApp.ApiModels;
+namespace Core.Features.GitHub.ViewModels;
 
-public class GitHubTokens
+public class GitHubTokenResponse
 {
     [JsonPropertyName("access_token")]
     public string AccessToken { get; set; } = null!;

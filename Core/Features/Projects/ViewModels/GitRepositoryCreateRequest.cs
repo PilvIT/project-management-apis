@@ -1,9 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-namespace Core.Features.Projects.ApiModels;
+namespace Core.Features.Projects.ViewModels;
 
-public class GitRepositoryCreateModel
+public class GitRepositoryCreateRequest
 {
     [Required]
     [JsonPropertyName("project")]

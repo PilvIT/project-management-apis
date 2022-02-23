@@ -1,4 +1,5 @@
-﻿using Core.Features.GitHubApp;
+﻿using Core.Features.GitHub;
+using Core.Features.GitHub.Interfaces;
 using Main.Injectables.Interfaces;
 
 namespace Main.Injectables;
@@ -7,12 +8,12 @@ public class GitHubService : IGitHubService
 {
     private readonly IConfiguration _conf;
     
-    public IGitHubAuthorization Authorization { get; }
+    public IGitHubOAuthClient OAuthClient { get; }
     
     public GitHubService(IConfiguration conf)
     {
         _conf = conf;
-        Authorization = new GitHubAuthorization(conf.GetGitHubClientId(), conf.GetGitHubClientSecret());
+        OAuthClient = new GitHubOAuthClient(conf.GetGitHubClientId(), conf.GetGitHubClientSecret());
     }
     
     public IGitHubUserApiClient GetUserApiClient(string accessToken)

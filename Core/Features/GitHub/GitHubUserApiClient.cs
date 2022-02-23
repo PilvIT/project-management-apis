@@ -1,10 +1,10 @@
 ﻿using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using Core.Extensions;
-using Core.Features.GitHubApp.ApiModels;
+using Core.Features.GitHub.Interfaces;
+using Core.Features.GitHub.ViewModels;
 using Microsoft.Net.Http.Headers;
 
-namespace Core.Features.GitHubApp;
+namespace Core.Features.GitHub;
 
 public class GitHubUserApiClient : IGitHubUserApiClient
 {
@@ -21,10 +21,10 @@ public class GitHubUserApiClient : IGitHubUserApiClient
     }
 
     /// <inheritdoc />
-    public async Task<GitHubUser> GetUserAsync()
+    public async Task<GitHubUserDetail> GetUserAsync()
     {
         HttpResponseMessage response = await _httpClient.GetAsync("/user");
-        return (await response.Content.ReadFromJsonAsync<GitHubUser>())!;
+        return (await response.Content.ReadFromJsonAsync<GitHubUserDetail>())!;
     }
     
     // TODO: Token refresh

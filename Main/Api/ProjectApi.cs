@@ -1,7 +1,7 @@
 ﻿using Core;
 using Core.Features.Projects.ApiModels;
-using Core.Features.Projects.Models;
 using Core.Features.Projects.ViewModels;
+using Core.Models;
 using Main.ApiModels;
 using Main.Injectables.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -21,7 +21,7 @@ public class ProjectApi : ApiBase
     }
 
     [HttpPost]
-    public ProjectDetailModel CreateProject(ProjectCreateModel request)
+    public ProjectDetail CreateProject(ProjectCreateRequest request)
     {
         using IDbContextTransaction transaction = _dbContext.Database.BeginTransaction();
         ProjectGroup? group = request.Group;
@@ -41,7 +41,7 @@ public class ProjectApi : ApiBase
         _dbContext.SaveChanges();
         transaction.Commit();
 
-        return new ProjectDetailModel
+        return new ProjectDetail
         {
             Id = project.Id,
             Name = project.Name,
@@ -66,7 +66,7 @@ public class ProjectApi : ApiBase
     }
 
     [HttpGet("{id:guid}")]
-    public ActionResult<ProjectDetailModel> RetrieveProject(Guid id)
+    public ActionResult<ProjectDetail> RetrieveProject(Guid id)
     {
         try
         {
@@ -76,7 +76,7 @@ public class ProjectApi : ApiBase
                 .ThenInclude(m => m.Technologies)
                 .Single(m => m.Id == id);
             
-            return new ProjectDetailModel
+            return new ProjectDetail
             {
                 Id = project.Id,
                 Name = project.Name,

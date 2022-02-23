@@ -1,11 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
-using Core.Features.Projects.Models;
+using Core.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Core.Features.Projects.ApiModels;
 
-public class ProjectCreateModel : IValidatableObject
+public class ProjectCreateRequest : IValidatableObject
 {
     [Required]
     [JsonPropertyName("group")]

@@ -28,10 +28,16 @@ The database can be conveniently set up using _docker-compose_.
 docker-compose up
 ```
 
-Wait for the containers to start, and run the migrations and start the server
+Wait for the containers to start, then seed the database
 
 ```bash
 # Console 2
-dotnet ef database update --project=main
+dotnet run --project=DatabaseSeeder
+```
+
+And finally start the development server
+
+```bash
+# Console 2
 dotnet watch --project=main --launch-profile Main
 ```

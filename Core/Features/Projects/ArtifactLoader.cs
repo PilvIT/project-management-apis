@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
-using Core.Features.Projects.Models;
+using Core.Models;
 
 namespace Core.Features.Projects;
 

@@ -1,8 +1,8 @@
-﻿using Core.Features.Projects.Models;
+﻿using Core.Models;
 
-namespace Core.Features.Projects.ApiModels;
+namespace Core.Features.Projects.ViewModels;
 
-public class ProjectDetailModel
+public class ProjectDetail
 {
     public Guid Id { get; set; }
     public string Name { get; set; } = null!;

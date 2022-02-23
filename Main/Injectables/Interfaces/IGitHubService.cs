@@ -1,10 +1,11 @@
-﻿using Core.Features.GitHubApp;
+﻿using Core.Features.GitHub;
+using Core.Features.GitHub.Interfaces;
 
 namespace Main.Injectables.Interfaces;
 
 public interface IGitHubService
 {
-    public IGitHubAuthorization Authorization { get; }
+    public IGitHubOAuthClient OAuthClient { get; }
 
     public IGitHubUserApiClient GetUserApiClient(string accessToken);
 }

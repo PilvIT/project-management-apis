@@ -1,7 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 
-namespace Core.Features.Projects.Models;
+namespace Core.Models;
 
 [Index(nameof(Name), IsUnique = true)]
 public class ProjectGroup : BaseModel

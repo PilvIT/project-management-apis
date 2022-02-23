@@ -1,4 +1,4 @@
-﻿using Core.Features.Projects.Models;
+﻿using Core.Models;
 
 namespace Core.Features.Projects.ViewModels;
 

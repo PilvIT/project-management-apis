@@ -1,14 +1,14 @@
-﻿using Core.Features.GitHubApp.ApiModels;
+﻿using Core.Features.GitHub.ViewModels;
 
-namespace Core.Features.GitHubApp;
+namespace Core.Features.GitHub.Interfaces;
 
-public interface IGitHubAuthorization
+public interface IGitHubOAuthClient
 {
     /// <summary>
     /// Returns an url to GitHub OAuth view.
     /// </summary>
     /// <param name="redirectUri">location to redirect user after authorization</param>
-    public GitHubAuthorizationUrl GetUrl(string redirectUri);
+    public GitHubOAuthInitResponse GetUrl(string redirectUri);
 
     /// <summary>
     /// Exchange the code returned from GitHub to access token.
@@ -17,5 +17,5 @@ public interface IGitHubAuthorization
     /// <param name="redirectUri">location redirected from GitHub</param>
     /// <param name="state">state received assigned to uri</param>
     /// <returns>access and refresh tokens to GitHub</returns>
-    public Task<GitHubTokens> ExchangeTokenAsync(string code, string redirectUri, string state);
+    public Task<GitHubTokenResponse> ExchangeTokenAsync(string code, string redirectUri, string state);
 }

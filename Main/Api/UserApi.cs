@@ -1,5 +1,4 @@
 ﻿using Core;
-using Core.Features.Users.Models;
 using Core.Features.Users.ViewModels;
 using Main.Injectables.Interfaces;
 using Microsoft.AspNetCore.Mvc;

@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace Core.Features.Users.Models;
+namespace Core.Models;
 
 public class AppRole : IdentityRole<Guid>
 {

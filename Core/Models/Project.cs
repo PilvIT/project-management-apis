@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Core.Features.Projects.Models;
+namespace Core.Models;
 
 public class Project : BaseModel
 {

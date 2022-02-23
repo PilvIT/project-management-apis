@@ -3,7 +3,8 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using Core.Features.Projects.ApiModels;
-using Core.Features.Projects.Models;
+using Core.Features.Projects.ViewModels;
+using Core.Models;
 using Tests.Templates;
 using Xunit;
 
@@ -25,14 +26,14 @@ public class ProjectApiTest : ApiTestCase
     public async Task CreateProject()
     {
         (_, HttpClient client) = await SetupUserAsync();
-        var requestData = new ProjectCreateModel
+        var requestData = new ProjectCreateRequest
         {
             GroupName = "Example Oyj",
             Name = "Candy Shop"
         };
         HttpResponseMessage response = await client.PostAsJsonAsync("/projects", requestData);
 
-        var responseData = (await response.Content.ReadFromJsonAsync<ProjectDetailModel>())!;
+        var responseData = (await response.Content.ReadFromJsonAsync<ProjectDetail>())!;
         Project project = (await DbContext.Projects.FindAsync(responseData.Id))!;
         await DbContext.Entry(project).Reference(p => p.Group).LoadAsync();
         

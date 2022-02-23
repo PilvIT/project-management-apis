@@ -1,7 +1,7 @@
-﻿using Core.Features.GitHubApp.ApiModels;
-using Core.Features.Projects.Models;
+﻿using Core.Features.GitHub.ViewModels;
+using Core.Models;
 
-namespace Core.Features.GitHubApp;
+namespace Core.Features.GitHub.Interfaces;
 
 public interface IGitHubRepositoryApiClient
 {

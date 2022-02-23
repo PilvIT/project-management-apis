@@ -1,14 +1,15 @@
 ﻿using System.IO.Compression;
 using System.Net.Http.Json;
 using Core.Extensions;
-using Core.Features.GitHubApp.ApiModels;
-using Core.Features.Projects.Models;
+using Core.Features.GitHub.Interfaces;
+using Core.Features.GitHub.ViewModels;
+using Core.Models;
 
-namespace Core.Features.GitHubApp;
+namespace Core.Features.GitHub;
 
 public class GitHubRepositoryApiClient : GitHubBaseApi, IGitHubRepositoryApiClient
 {
-    public GitHubRepositoryApiClient(string appName, GitHubTokens tokens) : base(appName, tokens)
+    public GitHubRepositoryApiClient(string appName, GitHubTokenResponse tokenResponse) : base(appName, tokenResponse)
     {
     }
     
@@ -22,7 +23,7 @@ public class GitHubRepositoryApiClient : GitHubBaseApi, IGitHubRepositoryApiClie
     {
         var url = $"{repository.Url}/actions/artifacts".Replace("https://github.com/", $"{Host}/repos/");
         HttpResponseMessage response = await CreateHttpClient().GetAsync(url);
-        var data =  await response.ReadJsonAsync<GitHubArtifactListResponse>();
+        var data =  await response.ReadJsonAsync<GitHubArtifactList>();
         if (data.Count > 0 && !data.Artifacts[0].Expired)
         {
              return await DownloadArtifactAsync(data.Artifacts[0], targetDirectory);
@@ -36,13 +37,15 @@ public class GitHubRepositoryApiClient : GitHubBaseApi, IGitHubRepositoryApiClie
     /// </summary>
     public async Task<GitHubRepositoryResponse> GetRepositoryDetailAsync(GitRepository repository)
     {
-        var request = new GitHubRepositoryRequest(repository.Url);
+        var request = new GitHubRepositoryDetailRequest(repository.Url);
         HttpResponseMessage response = await CreateHttpClient().PostAsJsonAsync("/graphql", request);
         // TODO: Error handling
         return await response.ReadJsonAsync<GitHubRepositoryResponse>();
     } 
     
-    private async Task<string> DownloadArtifactAsync(GitHubArtifactListDetail artifact, string targetDirectory)
+    private async Task<string> DownloadArtifactAsync(
+        GitHubArtifactList.GitHubArtifactDetail artifact,
+        string targetDirectory)
     {
         var zipPath = $"{targetDirectory}/${artifact.NodeId}.zip";
         var unzipPath = $"{targetDirectory}/${artifact.NodeId}";

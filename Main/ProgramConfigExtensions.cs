@@ -1,7 +1,7 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
 using Core;
-using Core.Features.Users.Models;
+using Core.Models;
 using Main.Constants;
 using Main.Exceptions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;

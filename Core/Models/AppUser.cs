@@ -1,9 +1,6 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.Json.Serialization;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 
-namespace Core.Features.Users.Models
+namespace Core.Models
 {
     /// <summary>
     /// Avoid modifying this model. Keep everything separately in a Profile model.

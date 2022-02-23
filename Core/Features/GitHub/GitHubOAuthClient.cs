@@ -1,15 +1,16 @@
 ﻿using System.Net.Http.Json;
-using Core.Features.GitHubApp.ApiModels;
+using Core.Features.GitHub.Interfaces;
+using Core.Features.GitHub.ViewModels;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Net.Http.Headers;
 
-namespace Core.Features.GitHubApp;
+namespace Core.Features.GitHub;
 
 /// <summary>
 /// Implements a web application flow for GitHub Authorization.
 /// <see href="https://docs.github.com/en/developers/apps/building-github-apps/identifying-and-authorizing-users-for-github-apps#web-application-flow">Official Guide</see>
 /// </summary>
-public class GitHubAuthorization : IGitHubAuthorization
+public class GitHubOAuthClient : IGitHubOAuthClient
 {
     private const string Host = "https://github.com";
     
@@ -17,7 +18,7 @@ public class GitHubAuthorization : IGitHubAuthorization
     private readonly string _clientSecret;
     private readonly HttpClient _httpClient;
     
-    public GitHubAuthorization(string clientId, string clientSecret)
+    public GitHubOAuthClient(string clientId, string clientSecret)
     {
         _clientId = clientId;
         _clientSecret = clientSecret;
@@ -27,7 +28,7 @@ public class GitHubAuthorization : IGitHubAuthorization
     }
 
     /// <inheritdoc />
-    public GitHubAuthorizationUrl GetUrl(string redirectUri)
+    public GitHubOAuthInitResponse GetUrl(string redirectUri)
     {
         var state = Guid.NewGuid().ToString();
         var parameters = new Dictionary<string, string>
@@ -38,12 +39,12 @@ public class GitHubAuthorization : IGitHubAuthorization
             { "allow_signup", "false" }
         };
 
-        string? url = QueryHelpers.AddQueryString($"{Host}/login/oauth/authorize", parameters);
-        return new GitHubAuthorizationUrl(url: url, state: state);
+        var url = QueryHelpers.AddQueryString($"{Host}/login/oauth/authorize", parameters);
+        return new GitHubOAuthInitResponse(url: url, state: state);
     }
 
     /// <inheritdoc />
-    public async Task<GitHubTokens> ExchangeTokenAsync(string code, string redirectUri, string state)
+    public async Task<GitHubTokenResponse> ExchangeTokenAsync(string code, string redirectUri, string state)
     {
         var requestData = new Dictionary<string, string>
         {
@@ -55,6 +56,6 @@ public class GitHubAuthorization : IGitHubAuthorization
         };
 
         HttpResponseMessage response = await _httpClient.PostAsJsonAsync("/login/oauth/access_token", requestData);
-        return (await response.Content.ReadFromJsonAsync<GitHubTokens>())!;
+        return (await response.Content.ReadFromJsonAsync<GitHubTokenResponse>())!;
     }
 }

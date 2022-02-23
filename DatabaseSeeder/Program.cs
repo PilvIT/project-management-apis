@@ -1,7 +1,7 @@
 ﻿// The default connection string is for development purposes! It is same as in defined in Main/docker-compose.yaml
 
 using Core;
-using Core.Features.Projects.Models;
+using Core.Models;
 using DatabaseSeeder;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,6 +17,24 @@ dbContextBuilder.UseNpgsql(connectionString);
 
 var dbContext = new AppDbContext(dbContextBuilder.Options);
 
+Console.WriteLine("Are you sure to recreate the database? y/n");
+var input = Console.ReadLine();
+if (input == "y")
+{
+    Console.WriteLine("Dropping the current database...");
+    dbContext.Database.EnsureDeleted();
+    Console.WriteLine("Database deleted.");
+    Console.WriteLine("Creating database and running migrations...");
+    dbContext.Database.EnsureCreated();
+    Console.WriteLine("Migrations applied.");
+}
+else
+{
+    Console.WriteLine("Database seeding canceled.");
+    return;
+}
+
+Console.WriteLine("Seeding the database...");
 dbContext.Technologies.Put(1, new Technology
 {
     Id = 1,
@@ -33,3 +51,4 @@ dbContext.Technologies.Put(2, new Technology
 });
 
 dbContext.SaveChanges();
+Console.WriteLine("Database seeding completed.");

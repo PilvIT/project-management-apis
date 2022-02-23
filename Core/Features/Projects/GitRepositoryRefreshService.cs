@@ -1,7 +1,7 @@
-﻿using Core.Features.GitHubApp;
-using Core.Features.GitHubApp.ApiModels;
-using Core.Features.Projects.Models;
+﻿using Core.Features.GitHub.Interfaces;
+using Core.Features.GitHub.ViewModels;
 using Core.Features.VulnerabilityManagement;
+using Core.Models;
 using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Core.Features.Projects;

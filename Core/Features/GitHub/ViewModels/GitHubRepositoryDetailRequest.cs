@@ -1,6 +1,6 @@
-﻿namespace Core.Features.GitHubApp.ApiModels;
+﻿namespace Core.Features.GitHub.ViewModels;
 
-public class GitHubRepositoryRequest
+public class GitHubRepositoryDetailRequest
 {
     public string Query { get; } = @"
         query($name: String!, $owner: String!) {
@@ -35,7 +35,7 @@ public class GitHubRepositoryRequest
         }";
     public Dictionary<string, string> Variables { get; }
 
-    public GitHubRepositoryRequest(string repositoryUrl)
+    public GitHubRepositoryDetailRequest(string repositoryUrl)
     {
         var parts = repositoryUrl.Split("/");
         Variables = new Dictionary<string, string>

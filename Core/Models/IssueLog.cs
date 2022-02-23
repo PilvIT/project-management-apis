@@ -1,8 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
-namespace Core.Features.Projects.Models;
+namespace Core.Models;
 
 public class IssueLog : BaseModel
 {

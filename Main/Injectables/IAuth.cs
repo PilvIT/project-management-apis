@@ -1,7 +1,7 @@
 ﻿using System.Security.Claims;
 using Core;
-using Core.Features.GitHubApp.ApiModels;
-using Core.Features.Users.Models;
+using Core.Features.GitHub.ViewModels;
+using Core.Models;
 using Main.Exceptions;
 using Main.Injectables.Interfaces;
 
@@ -13,7 +13,7 @@ namespace Main.Injectables;
 public class Auth : IAuth
 {
     public AppUser User { get; }
-    public GitHubTokens GitHubTokens => LoadGitHubTokens();
+    public GitHubTokenResponse GitHubTokenResponse => LoadGitHubTokens();
 
     private readonly AppDbContext _dbContext;
     private readonly HttpContext _httpContext;
@@ -27,12 +27,12 @@ public class Auth : IAuth
         User = LoadUser();
     }
 
-    private GitHubTokens LoadGitHubTokens()
+    private GitHubTokenResponse LoadGitHubTokens()
     {
         Claim accessToken = _httpContext.User.Claims.Single(claim => claim.Type == "gh-access-token");
         Claim refreshToken = _httpContext.User.Claims.Single(claim => claim.Type == "gh-refresh-token");
 
-        return new GitHubTokens()
+        return new GitHubTokenResponse()
         {
             AccessToken = accessToken.Value,
             RefreshToken = refreshToken.Value
