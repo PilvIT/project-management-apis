@@ -29,7 +29,8 @@ public class DatabaseTestCase : BaseTest
         var gitHubId = GetSequentialId();
         return await userCreateService.CreateAsync(new GitHubUserDetail
         {
-            Id = gitHubId
+            Id = gitHubId,
+            Name = "John Doe"
         });
     }
 

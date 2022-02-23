@@ -15,12 +15,6 @@ public class ProjectApiTest : ApiTestCase
     public ProjectApiTest()
     {
     }
-    
-    [Fact]
-    public void GetProjects()
-    {
-        throw new NotImplementedException();
-    }
 
     [Fact]
     public async Task CreateProject()
