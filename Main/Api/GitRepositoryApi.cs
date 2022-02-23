@@ -34,7 +34,8 @@ public class GitRepositoryApi : BaseApi
     {
         IQueryable<GitRepository> queryable = _dbContext.GitRepositories
             .Include(r => r.Technologies)
-            .Include(r => r.IssueLogs);
+            .Include(r => r.IssueLogs)
+            .OrderBy(r => r.Name);
 
         if (hasIssues == true)
         {
