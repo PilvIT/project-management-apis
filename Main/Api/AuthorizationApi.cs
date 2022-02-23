@@ -58,7 +58,7 @@ public class AuthorizationApi : ControllerBase
         if (user == null)
         {
             var userCreateService = new UserCreateService(_dbContext, _userManager);
-            user = await userCreateService.CreateAsync(gitHubUserDetail.Id);
+            user = await userCreateService.CreateAsync(gitHubUserDetail);
         }
 
         var response = new AuthTokenExchangeResponse

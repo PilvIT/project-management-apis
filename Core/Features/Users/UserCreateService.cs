@@ -1,4 +1,5 @@
-﻿using Core.Models;
+﻿using Core.Features.GitHub.ViewModels;
+using Core.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Storage;
 
@@ -15,7 +16,7 @@ public class UserCreateService
         _userManager = userManager;
     }
 
-    public async Task<AppUser> CreateAsync(long gitHubId)
+    public async Task<AppUser> CreateAsync(GitHubUserDetail ghUser)
     {
         await using IDbContextTransaction transaction = await _dbContext.Database.BeginTransactionAsync();
 
@@ -27,13 +28,14 @@ public class UserCreateService
         IdentityResult result = await _userManager.CreateAsync(user);
         if (!result.Succeeded)
         {
-            throw new ArgumentException("User already exists, try login instead", nameof(gitHubId));
+            throw new ArgumentException("User already exists, try login instead", nameof(ghUser));
         }
         
         var profile = new Profile
         {
             AppUserId = user.Id,
-            GitHubId = gitHubId
+            GitHubId = ghUser.Id,
+            DisplayName = ghUser.Name
         };
         user.Profile = profile;
         _dbContext.Profiles.Add(profile);

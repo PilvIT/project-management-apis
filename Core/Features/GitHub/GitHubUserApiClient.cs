@@ -26,6 +26,4 @@ public class GitHubUserApiClient : IGitHubUserApiClient
         HttpResponseMessage response = await _httpClient.GetAsync("/user");
         return (await response.Content.ReadFromJsonAsync<GitHubUserDetail>())!;
     }
-    
-    // TODO: Token refresh
 }

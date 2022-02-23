@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Core;
+using Core.Features.GitHub.ViewModels;
 using Core.Features.Users;
 using Core.Models;
 using Microsoft.AspNetCore.Identity;
@@ -25,8 +26,11 @@ public class DatabaseTestCase : BaseTest
         var userManager = scope.ServiceProvider.GetService<UserManager<AppUser>>()!;
 
         var userCreateService = new UserCreateService(dbContext: DbContext, userManager: userManager);
-        long gitHubId = GetSequentialId();
-        return await userCreateService.CreateAsync(gitHubId);
+        var gitHubId = GetSequentialId();
+        return await userCreateService.CreateAsync(new GitHubUserDetail
+        {
+            Id = gitHubId
+        });
     }
 
     protected static long GetSequentialId()
