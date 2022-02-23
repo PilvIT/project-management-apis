@@ -15,4 +15,4 @@ dotnet watch run --project main
 
 ## License
 
-TBD
+The content of this repository is licensed under [MIT License](./LICENSE).
