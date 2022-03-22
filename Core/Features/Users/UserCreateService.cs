@@ -22,7 +22,8 @@ public class UserCreateService
 
         var user = new AppUser
         {
-            UserName = Guid.NewGuid().ToString()
+            UserName = Guid.NewGuid().ToString(),
+            EmailConfirmed = true
         };
 
         IdentityResult result = await _userManager.CreateAsync(user);
@@ -30,12 +31,13 @@ public class UserCreateService
         {
             throw new ArgumentException("User already exists, try login instead", nameof(ghUser));
         }
-        
+
         var profile = new Profile
         {
             AppUserId = user.Id,
+            DisplayName = ghUser.Name,
             GitHubId = ghUser.Id,
-            DisplayName = ghUser.Name
+            GitHubUrl = ghUser.Url
         };
         user.Profile = profile;
         _dbContext.Profiles.Add(profile);

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Net.Http;
+﻿using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using Core.Features.Projects.ApiModels;
@@ -12,10 +11,6 @@ namespace Tests.Api;
 
 public class ProjectApiTest : ApiTestCase
 {
-    public ProjectApiTest()
-    {
-    }
-
     [Fact]
     public async Task CreateProject()
     {

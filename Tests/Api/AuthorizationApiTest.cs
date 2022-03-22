@@ -57,7 +57,8 @@ public class AuthorizationApiTest : ApiTestCase
                 .Returns(new GitHubUserDetail
                 {
                     Id = GetSequentialId(),
-                    Name = "John Doe"
+                    Name = "John Doe",
+                    Url = "https://localhost:8000/john"
                 });
             
             return _mockGitHubUserApiClient.Object;

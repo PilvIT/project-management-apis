@@ -25,7 +25,9 @@ public class UserApi : BaseApi
         return new UserDetail
         {
             Id = User.Id,
-            Name = User.Profile.DisplayName
+            Name = User.Profile.DisplayName,
+            Email = User.Email,
+            GitHub = User.Profile.GitHubUrl
         };
     }
 }

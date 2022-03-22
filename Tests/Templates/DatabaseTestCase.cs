@@ -30,7 +30,8 @@ public class DatabaseTestCase : BaseTest
         return await userCreateService.CreateAsync(new GitHubUserDetail
         {
             Id = gitHubId,
-            Name = "John Doe"
+            Name = "John Doe",
+            Url = "https://localhost:8000/john"
         });
     }
 
