@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
@@ -18,6 +19,10 @@ public class Profile : BaseModel
 
     [StringLength(200)]
     public string GitHubUrl { get; set; } = null!;
+
+    [StringLength(500)]
+    [DefaultValue("")]
+    public string Description { get; set; } = "";
     
     [StringLength(200)]
     public string DisplayName { get; set; } = null!;

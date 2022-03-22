@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using Core;
 using Core.Features.Users.ViewModels;
+using Core.Models;
 using Main.Injectables.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,20 +15,23 @@ public class UserApi : BaseApi
     public UserApi(AppDbContext dbContext, IAuthService authService) : base(authService)
     {
         _dbContext = dbContext;
+        _dbContext.Entry(User).Reference(u => u.Profile).Load();
     }
     
     [HttpGet]
     public UserDetail GetUser()
     {
-        _dbContext.Entry(User).Reference(u => u.Profile).Load();
-        Debug.Assert(User.Profile != null);
-        
-        return new UserDetail
-        {
-            Id = User.Id,
-            Name = User.Profile.DisplayName,
-            Email = User.Email,
-            GitHub = User.Profile.GitHubUrl
-        };
+        return new UserDetail(User);
+    }
+
+    [HttpPut]
+    public UserDetail UpdateUser(UserUpdateRequest request)
+    {
+        Profile profile = User.Profile!;
+        profile.DisplayName = request.Name;
+        profile.Description = request.Description;
+        _dbContext.SaveChangesAsync();
+
+        return new UserDetail(User);
     }
 }

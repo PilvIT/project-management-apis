@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 using Core.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace Core.Features.Projects.ApiModels;
+namespace Core.Features.Projects.ViewModels;
 
 public class ProjectCreateRequest : IValidatableObject
 {

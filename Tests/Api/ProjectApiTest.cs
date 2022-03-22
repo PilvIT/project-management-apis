@@ -1,7 +1,6 @@
 ﻿using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
-using Core.Features.Projects.ApiModels;
 using Core.Features.Projects.ViewModels;
 using Core.Models;
 using Tests.Templates;

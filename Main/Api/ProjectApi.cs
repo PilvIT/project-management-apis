@@ -1,5 +1,4 @@
 ﻿using Core;
-using Core.Features.Projects.ApiModels;
 using Core.Features.Projects.ViewModels;
 using Core.Models;
 using Main.Injectables.Interfaces;

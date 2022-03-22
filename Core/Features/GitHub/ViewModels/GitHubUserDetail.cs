@@ -7,6 +7,8 @@ public class GitHubUserDetail
     public long Id { get; set; }
     public string Name { get; set; } = null!;
 
+    public string Email { get; set; } = null!;
+    
     [JsonPropertyName("html_url")]
     public string Url { get; set; } = null!;
 }

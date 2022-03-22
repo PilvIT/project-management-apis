@@ -23,6 +23,7 @@ public class UserCreateService
         var user = new AppUser
         {
             UserName = Guid.NewGuid().ToString(),
+            Email = ghUser.Email,
             EmailConfirmed = true
         };
 
