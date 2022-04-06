@@ -49,35 +49,16 @@ public class ProjectApi : BaseApi
     }
 
     [HttpGet("{id:guid}")]
-    public ActionResult<ProjectDetail> RetrieveProject(Guid id)
+    public async Task<ActionResult<ProjectDetail>> RetrieveProject(Guid id)
     {
-        try
-        {
-            Project project = _dbContext.Projects
-                .Include(m => m.Group)
-                .Include(m => m.GitRepositories)
-                .ThenInclude(m => m.Technologies)
-                .Single(m => m.Id == id);
-
-            return new ProjectDetail(project);
-        }
-        catch (InvalidOperationException)
-        {
-            // The project does not exist
-            return new NotFoundResult();
-        }
+        Project? project = await _service.RetrieveProjectAsync(id);
+        return project != null ? new ProjectDetail(project) : new NotFoundResult();
     }
 
     [HttpDelete("{id:guid}")]
     public ActionResult DeleteProject(Guid id)
     {
-        Project? project = _dbContext.Projects.Find(id);
-        if (project != null)
-        {
-            _dbContext.Projects.Remove(project);
-            _dbContext.SaveChanges();
-        }
-
+        _service.DeleteProjectAsync(id);
         return new OkObjectResult(new { });
     }
 }

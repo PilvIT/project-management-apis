@@ -20,7 +20,14 @@ public class HealthCheckApi : BaseApi
     [HttpPost]
     public async Task<HealthCheckDetail> CreateHealthCheck(HealthCheckCreateRequest request)
     {
-        HealthCheck healthCheck = await _service.AddHealthCheckUrlAsync(request.Repository, request.Url);
+        HealthCheck healthCheck = await _service.AddHealthCheckUrlAsync(request.Repository!, request.Url);
         return new HealthCheckDetail(healthCheck);
+    }
+
+    [HttpDelete("id:guid")]
+    public async Task<ActionResult> DeleteHealthCheck(Guid id)
+    {
+        await _service.DeleteHealthCheckAsync(id);
+        return new OkObjectResult(new { });
     }
 }

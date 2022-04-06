@@ -24,4 +24,14 @@ public class HealthCheckService : IHealthCheckService
         
         return instance;
     }
+
+    public async Task DeleteHealthCheckAsync(Guid id)
+    {
+        HealthCheck? instance = await _dbContext.HealthChecks.FindAsync(id);
+        if (instance != null)
+        {
+            _dbContext.HealthChecks.Remove(instance);
+            await _dbContext.SaveChangesAsync();
+        }
+    }
 }

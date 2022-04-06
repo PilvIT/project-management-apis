@@ -12,4 +12,6 @@ public interface IHealthCheckService
     /// <exception cref="ArgumentException">a repository with given id does not exist</exception>
     /// <returns>instance of HealthCheck</returns>
     public Task<HealthCheck> AddHealthCheckUrlAsync(GitRepository repository, string url);
+
+    public Task DeleteHealthCheckAsync(Guid id);
 }
