@@ -13,6 +13,7 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid>
 
     public DbSet<Dependency> Dependencies { get; set; } = null!;
     public DbSet<GitRepository> GitRepositories { get; set; } = null!;
+    public DbSet<HealthCheck> HealthChecks { get; set; } = null!;
     public DbSet<IssueLog> IssueLogs { get; set; } = null!;
     public DbSet<Profile> Profiles { get; set; } = null!;
     public DbSet<ProjectGroup> ProjectGroups { get; set; } = null!;
@@ -26,6 +27,7 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid>
         builder.HasPostgresExtension("pgcrypto");
 
         builder.ApplyConfiguration(new GitRepositoryConfiguration());
+        builder.ApplyConfiguration(new HealthCheckConfiguration());
         builder.ApplyConfiguration(new IssueLogConfiguration());
         builder.ApplyConfiguration(new ProjectGroupConfiguration());
         builder.ApplyConfiguration(new ProjectConfiguration());
