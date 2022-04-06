@@ -1,4 +1,5 @@
 ﻿using Core;
+using Core.Features.Projects;
 using Core.Features.Projects.ViewModels;
 using Core.Models;
 using Main.Injectables.Interfaces;
@@ -13,40 +14,23 @@ namespace Main.Api;
 public class ProjectApi : BaseApi
 {
     private readonly AppDbContext _dbContext;
+    private readonly IProjectService _service;
 
-    public ProjectApi(AppDbContext dbContext, IAuthService authService) : base(authService)
+    public ProjectApi(AppDbContext dbContext, IAuthService authService, IProjectService projectService) : base(authService)
     {
         _dbContext = dbContext;
+        _service = projectService;
     }
 
     [HttpPost]
-    public ProjectDetail CreateProject(ProjectCreateRequest request)
+    public async Task<ProjectDetail> CreateProject(ProjectCreateRequest request)
     {
-        using IDbContextTransaction transaction = _dbContext.Database.BeginTransaction();
-        ProjectGroup? group = request.Group;
-        if (group == null)
-        {
-            group = new ProjectGroup { Name = request.GroupName };
-            _dbContext.ProjectGroups.Add(group);
-            _dbContext.SaveChanges();
-        }
+        await using IDbContextTransaction transaction = await _dbContext.Database.BeginTransactionAsync();
+        ProjectGroup group = request.Group ?? await _service.CreateProjectGroupAsync(request.GroupName);
+        Project project = await _service.CreateProjectAsync(request.Name, group);
+        await transaction.CommitAsync();
 
-        var project = new Project
-        {
-            Name = request.Name,
-            Group = group
-        };
-        _dbContext.Projects.Add(project);
-        _dbContext.SaveChanges();
-        transaction.Commit();
-
-        return new ProjectDetail
-        {
-            Id = project.Id,
-            Name = project.Name,
-            Group = project.Group.Name,
-            Repositories = new List<GitRepository>()
-        };
+        return new ProjectDetail(project);
     }
     
     
@@ -74,14 +58,8 @@ public class ProjectApi : BaseApi
                 .Include(m => m.GitRepositories)
                 .ThenInclude(m => m.Technologies)
                 .Single(m => m.Id == id);
-            
-            return new ProjectDetail
-            {
-                Id = project.Id,
-                Name = project.Name,
-                Group = project.Group!.Name,
-                Repositories = project.GitRepositories.ToList()
-            };
+
+            return new ProjectDetail(project);
         }
         catch (InvalidOperationException)
         {

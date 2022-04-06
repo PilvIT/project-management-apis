@@ -1,3 +1,5 @@
+using Core.Features.HealthChecks;
+using Core.Features.Projects;
 using Main;
 using Main.Injectables;
 using Main.Injectables.Interfaces;
@@ -20,8 +22,10 @@ builder.Services.AddHttpLogging(options =>
 });
 
 // Dependency injections
-builder.Services.AddTransient<IGitHubService, GitHubService>();
 builder.Services.AddTransient<IAuthService, AuthServiceService>();
+builder.Services.AddTransient<IHealthCheckService, HealthCheckService>();
+builder.Services.AddTransient<IGitHubService, GitHubService>();
+builder.Services.AddTransient<IProjectService, ProjectService>();
 
 WebApplication app = builder.Build();
 
