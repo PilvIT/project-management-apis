@@ -25,12 +25,12 @@ public class UserApi : BaseApi
     }
 
     [HttpPut]
-    public UserDetail UpdateUser(UserUpdateRequest request)
+        public async Task<UserDetail> UpdateUser(UserUpdateRequest request)
     {
         Profile profile = User.Profile!;
         profile.DisplayName = request.Name;
         profile.Description = request.Description;
-        _dbContext.SaveChangesAsync();
+        await _dbContext.SaveChangesAsync();
 
         return new UserDetail(User);
     }
