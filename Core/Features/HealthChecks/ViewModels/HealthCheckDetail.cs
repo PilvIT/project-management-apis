@@ -18,4 +18,9 @@ public class HealthCheckDetail
         Repository = model.RepositoryId;
         Url = model.Url;
     }
+
+    public HealthCheckDetail(HealthCheck model, HealthCheckStatus status)
+    {
+        
+    }
 }

@@ -1,4 +1,5 @@
-﻿using Core.Models;
+﻿using Core.Features.HealthChecks.ViewModels;
+using Core.Models;
 
 namespace Core.Features.HealthChecks;
 
@@ -25,6 +26,13 @@ public class HealthCheckService : IHealthCheckService
         return instance;
     }
 
+    /// <inheritdoc />
+    public Task<HealthCheckStatus> CheckHealth(HealthCheck instance)
+    {
+        throw new NotImplementedException();
+    }
+
+    /// <inheritdoc />
     public async Task DeleteHealthCheckAsync(Guid id)
     {
         HealthCheck? instance = await _dbContext.HealthChecks.FindAsync(id);
@@ -34,4 +42,7 @@ public class HealthCheckService : IHealthCheckService
             await _dbContext.SaveChangesAsync();
         }
     }
+
+    /// <inheritdoc />
+    public async Task<HealthCheck?> RetrieveAsync(Guid id) => await _dbContext.HealthChecks.FindAsync(id);
 }

@@ -81,7 +81,7 @@ public static class ServiceExtensions
 
     public static void AddDatabases(this IServiceCollection services, IConfiguration configuration)
     {
-        var connectionString = configuration.GetConnectionString("PostgreSQL");
+        string? connectionString = configuration.GetConnectionString("PostgreSQL");
         services.AddDbContext<AppDbContext>(options =>
         {
             options.UseNpgsql(connectionString, npgsqlOptions =>

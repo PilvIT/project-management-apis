@@ -24,6 +24,25 @@ public class HealthCheckApi : BaseApi
         return new HealthCheckDetail(healthCheck);
     }
 
+    [HttpGet("id:guid")]
+    public async Task<ActionResult<HealthCheckDetail>> RetrieveHealthCheck(Guid id, [FromQuery] bool poll)
+    {
+        HealthCheck? instance = await _service.RetrieveAsync(id);
+        if (instance == null)
+        {
+            return new NotFoundResult();
+        }
+
+        if (!poll)
+        {
+            return new HealthCheckDetail(instance);
+        }
+        
+        HealthCheckStatus status = await _service.CheckHealth(instance);
+        return new HealthCheckDetail(instance, status);
+
+    }
+    
     [HttpDelete("id:guid")]
     public async Task<ActionResult> DeleteHealthCheck(Guid id)
     {
