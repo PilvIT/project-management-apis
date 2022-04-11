@@ -26,7 +26,7 @@ public class DatabaseTestCase : BaseTest
         var userManager = scope.ServiceProvider.GetService<UserManager<AppUser>>()!;
 
         var userCreateService = new UserCreateService(dbContext: DbContext, userManager: userManager);
-        var gitHubId = GetSequentialId();
+        long gitHubId = GetSequentialId();
         return await userCreateService.CreateAsync(new GitHubUserDetail
         {
             Id = gitHubId,

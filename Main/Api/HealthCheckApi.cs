@@ -38,7 +38,7 @@ public class HealthCheckApi : BaseApi
             return new HealthCheckDetail(instance);
         }
         
-        HealthCheckStatus status = await _service.CheckHealth(instance);
+        HealthCheckStatus status = await _service.CheckHealthAsync(instance);
         return new HealthCheckDetail(instance, status);
 
     }

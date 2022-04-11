@@ -10,6 +10,7 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 builder.Services.AddApi();
 builder.Services.AddCorsPolicies();
 builder.Services.AddDatabases(builder.Configuration);
+builder.Services.AddHealthChecks();
 builder.Services.AddJwtAuthentication(builder.Configuration);
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -21,7 +22,9 @@ builder.Services.AddHttpLogging(options =>
     options.LoggingFields = HttpLoggingFields.All;
 });
 
+
 // Dependency injections
+builder.Services.AddRetryableHttpClient();
 builder.Services.AddTransient<IAuthService, AuthServiceService>();
 builder.Services.AddTransient<IHealthCheckService, HealthCheckService>();
 builder.Services.AddTransient<IGitHubService, GitHubService>();
@@ -48,6 +51,7 @@ else
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers().RequireAuthorization();
+app.MapHealthChecks("/health-check");
 
 app.Run();
 

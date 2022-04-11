@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Net.Http.Headers;
+using Polly;
 
 namespace Main;
 
@@ -90,5 +91,15 @@ public static class ServiceExtensions
                 npgsqlOptions.MigrationsAssembly("Main");
             });
         });
+    }
+
+    public static void AddRetryableHttpClient(this IServiceCollection services)
+    {
+        // https://docs.microsoft.com/en-us/aspnet/core/fundamentals/http-requests?view=aspnetcore-6.0#use-polly-based-handlers
+        services
+            .AddHttpClient("Retryable")
+            .AddTransientHttpErrorPolicy(
+                options => 
+                    options.WaitAndRetryAsync(3, count => TimeSpan.FromMilliseconds(count * 500)));
     }
 }

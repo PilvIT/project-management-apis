@@ -19,7 +19,7 @@ public interface IHealthCheckService
     /// </summary>
     /// <param name="instance">of the health check</param>
     /// <returns>the status of health check</returns>
-    public Task<HealthCheckStatus> CheckHealth(HealthCheck instance);
+    public Task<HealthCheckStatus> CheckHealthAsync(HealthCheck instance);
 
     public Task DeleteHealthCheckAsync(Guid id);
     public Task<HealthCheck?> RetrieveAsync(Guid id);
